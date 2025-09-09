@@ -142,7 +142,7 @@ scripts/eval_fathom_search.sh \
   --query-gpus 2,3
 ```
 
-### Evaluation for other baselines used in the paper 
+### Evaluate other baselines used in the paper 
 
 ```bash
 # II‑Search‑4B
