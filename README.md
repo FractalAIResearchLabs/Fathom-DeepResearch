@@ -30,7 +30,7 @@ We also release **our data generation pipeline, training code, our custom web to
 
 ---
 
-## 🚀 Inference (Fathom‑Search only)
+## 🚀 Inference
 
 This section shows how to host the **tool web‑server** and the **SGLang model server**, then run **single‑question inference** via `inference.py`.
 
@@ -48,9 +48,9 @@ playwright install
 
 Set the following in `web_agents/host.sh`:
 
-- **SERPER_API_KEY** (get from serper.dev; ~2,500 free queries without a card)
-- **JINA_API_KEY** (optional) — robust HTML/PDF fallback
-- **OPENAI_API_KEY** — used for page/PDF summarization (or set to a model URL)
+- **SERPER_API_KEY** (get from serper.dev; ~2,500 free queries without any card) (necessary fror live web-search)
+- **JINA_API_KEY** (optional) — used in the web-page extraction pipeline (recommended for replicatiion)
+- **OPENAI_API_KEY** (optional) — for goal conditioned querying of web-pages using GPT-4.1-mini (recommended for replicatiion)
 
 Launch on **port 8901** with 16 workers:
 
@@ -73,14 +73,8 @@ python -m sglang.launch_server \
   --trust-remote-code \
   --disable-radix-cache \
   --disable-cuda-graph \
-  --context-length 40960
-```
-
-If you have >1 GPU, add parallelism flags (example):
-
-```bash
-  --tp 2
-  --dp 2
+  --context-length 40960 \
+  --tp 2 #optional for multi-gpu inference
 ```
 
 ### 4) Single‑question inference
@@ -98,14 +92,11 @@ python inference.py \
 
 Tips:
 - Use multiple executors for load‑balancing: `--executors http://0.0.0.0:8901,http://0.0.0.0:8903`.
-- If your agent benefits from tokenization hints: `--tokenizer /path/to/Qwen3-4B`.
-- Add `--no-color` for plain terminal output.
 
-This prints a concise report with **Final Answer (extracted)**, **Tool Calls** summary, and the raw **Transcript**.
 
 ---
 
-## 📊 Evaluation (batched)
+## 📊 Evaluation (Multi GPU)
 
 This section covers **batched evaluation** using the provided scripts in `scripts/`. Use placeholders `model_path` and `dataset_name` — the evaluator will read `eval_benchmarks/<dataset_name>.jsonl` with columns `['id','question','answer']`.
 
@@ -125,7 +116,7 @@ This section covers **batched evaluation** using the provided scripts in `script
 
 ### Evaluate Fathom‑Search (recommended starting point)
 
-**OpenAI extractor on CPU; main model on GPUs 0,1**
+**GPT-4.1-mini query-LLM on CPU, main model on GPUs 0,1 (TP=1)**
 
 ```bash
 scripts/eval_fathom_search.sh \
@@ -137,7 +128,7 @@ scripts/eval_fathom_search.sh \
   --query-llm gpt-4.1-mini
 ```
 
-**Local Qwen as extractor on GPUs 2,3 (TP=2); main model on GPUs 0,1**
+**Local Qwen as extractor on GPUs 2,3 (TP=2); main model on GPUs 0,1 (TP=2)**
 
 ```bash
 scripts/eval_fathom_search.sh \
@@ -151,7 +142,7 @@ scripts/eval_fathom_search.sh \
   --query-gpus 2,3
 ```
 
-### Other baseline runners (for comparison)
+### Evaluation for other baselines used in the paper 
 
 ```bash
 # II‑Search‑4B
