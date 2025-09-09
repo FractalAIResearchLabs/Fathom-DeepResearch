@@ -1,4 +1,4 @@
-<!-- # 🧮 Fathom-Search: A deep search agent
+🧮 Fathom-Search: A deep search agent
  
 <div align="center">
   
