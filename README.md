@@ -3,7 +3,8 @@
 <div align="center">
   
 [![dataset](https://img.shields.io/badge/HFData-Fathom--Search--Data-green?logo=huggingface&style=for-the-badge)](https://huggingface.co/collections/FractalAIResearch/Fathom-Search-datasets-681b42fe6f20d4b11fc51d79)
-[![space](https://img.shields.io/badge/HFSpace-Fathom--Search--4B-red?logo=huggingface&style=for-the-badge)](https://huggingface.co/spaces/FractalAIResearch/Fathom-Search-4B)
+[![space](https://img.shields.io/badge/HFSpace-🚀_Chat_with_Fathom_Search-red?logo=huggingface&style=for-the-badge)](https://huggingface.co/spaces/FractalAIResearch/Fathom-Search-4B)
+[![space](https://img.shields.io/badge/HFModel-Fathom--Search--4B-red?logo=huggingface&style=for-the-badge)](https://huggingface.co/FractalAIResearch/Fathom-Search-4B)
 
 </div>
 
@@ -11,24 +12,91 @@
 
 ---
 
-## Overview
+## Introduction
 
-Large Language Models (LLMs) are getting increasingly capable but still remain bounded by static parametric knowledge and brittle retrieval pipelines. The world changes faster than any pretraining cycle can keep up and conventional RAG assumes neatly structured corpora and predictable inputs. Solving real evolving tasks requires agents that can iteratively query web, navigate noisy, heterogeneous sources, verify claims and synthesize answers under uncertainty. That is the promise of DeepSearch and the next necessary milestone on the path to reliable agents.
+Large Language Models (LLMs) have demonstrated promising results across a diverse set of tasks such as mathematical reasoning, code generation, Despite these advancements, they remain prone to factual inaccuracies/hallucinations as they rely on static internal knowledge acquired during pretraining. Real world information is continually evolving and getting updated. Given the high cost of pretraining LLMs, it is not pragmatic to rely solely on repeated pretraining to update their knowledge. A potential solution to this problem involves enabling LLMs to interface with external knowledge systems.
 
-But scaling DeepSearch has been blocked by three hard problems: building verifiable, scalable training data that truly requires live search; stabilizing multi-turn RL with tools in the face of sparse rewards and non-stationary web environments; and overcoming lazy tool use that truncates exploration to a handful of shallow calls.
-We counter these problems with carefully designed data generation pipeline and modified optimization algorithm.
+Retrieval-augmented generation (RAG) has become the standard framework for open-domain QA, where LLMs generate answers conditioned on retrieved context. However, these pipelines rely on structured, static corpora and predictable input formats conditions rarely met in real-world search tasks. In contrast, recent efforts have focused on instilling tool-mediated DeepSearch reasoning capabilities in LLMs that involve free-form web queries, parsing heterogeneous/noisy outputs, and synthesizing multi-step reasoning chains. The core principle underlying this approach is to concentrate training efforts on developing the model's ability to autonomously and effectively access and leverage external information sources (search engines). Rather than directly incorporating factual content into the model parameters, this method emphasizes teaching the model how to navigate, comprehend, and utilize relevant information from vast digital information landscapes for complex-information seeking tasks. This distinction makes DeepSearch fundamentally more difficult than traditional RAG and a necessary precursor to the next scaling milestone in search augmented language model capabilities: _DeepResearch Agents_
 
-To this end, we release
+However, scaling DeepSearch capability faces three key challenges:
 
-- **Fathom-Search-4B**, a 4B-parameter model trained to browse, extract, verify and reason over live web content achieving SOTA DeepSearch benchmarks. Rather than memorizing facts, it learns how to find, test and trust information; sustaining deep, economical search over long horizons and noisy pages.
+- the lack of high-quality, verifiable, scalable training dataset creation pipeline
+- algorithmic instability in multi-turn reinforcement learning (RL) with tools
+- lazy tool calling behavior which hinders scaling deep information exploration and retrieval capabilities
 
-- **DUETQA**, a multi-agent self-play dataset of 5,000 verifiable, search-required questions that surface real-world retrieval challenges across PDFs, forums, videos, and raw HTML.
+## ✨ Key Highlights
 
-- **RAPO**, a zero-overhead modification of GRPO that stabilizes multi-turn tool use via dataset pruning, advantage scaling, and replay buffers preventing entropy collapse and enabling steady improvement under sparse rewards.
+To this end, we introduce a post-training recipe to create state-of-the-art DeepSearch enabled reasoning model, Fathom-Search-4B. We enlist our key contributions below:
 
-We also release **our data generation pipeline, training code, our custom web tools** which we believe will help the community to progress further in the reasoning domain.
+- 📚 **DUETQA**: We build a 5K example dataset created through multi-agent self-play, designed to require live web search to answer its queries.
+- 🏋️ **Training Recepie**: Two-stage RL-zero training that provides coarse control over the exploration and verification strategies developed by the model.
+- 🧠 **RAPO**: Zero-overhead modification of GRPO that stabilizes multi-turn RL through dataset pruning, advantage scaling, and replay buffers.
+- 🛠️ **Steerable step-level reward**: We design a novel step level reward that enables fine-grained control over long-horizon tool use, which scales tool use beyond 20+ calls.
+- 🏆 **Fathom-Search-4B**: SOTA 4B-parameter model trained to browse, extract, verify and reason over live web content acheiving SOTA Deep search benchmarks. Rather than memorizing facts, it learns how to find, test and trust
+
+We also release our data generation pipeline, our custom web tools which we believe will help the community to progress further in the reasoning domain.
 
 ---
+
+## 📊 Results
+
+**Fathom‑Search-4B** sets a new state of the art on DeepSearch benchmarks outperforming all prior open source baselines. Our model reaches average of 52.1% on DeepSearch and 53.8% on General Reasoning benchmarks—improvements of +24.6 pp and +4.0 pp over Qwen3-4B + Search. On harder benchmarks such as FRAMES and WebWalkerQA we observe ≥100% relative gains, and > 3× on Seal0. It also exceeds prior SOTA II-Search-4B and surpasses larger Qwen2.5-7B based systems such as ZeroSearch-7B and R1-Searcher-7B
+
+We evaluate Fathom‑Search-4B and compare with several baseline models across 9 challenging benchmarks
+
+Model	| SimpleQA	| FRAMES	| WebWalker	| Seal0	| Musique	| Avg
+--- | ---	| ---	| ---	| ---	| ---	| ---
+**_Closed-Source Models_**	| ---	| ---	| ---	| ---	| ---	| ---
+GPT-4o (without search)	| 34.7	| 52.4	| 3.2	| 7.2	| 34.0	| 26.3
+o3 (without search)	| 49.4	| 43.2	| 14.0	| 14.0	| _48.9_	| 33.9
+GPT-4o (with search)	| _84.4_	| _63.7_	| _31.6_	| _15.3_	| 37.5	| _46.5_
+o3 (with search)	| **96.0**	| **86.8**	| **57.0**	| **49.5**	| **51.2**	| **68.1**
+| | | | | | |
+**_Open-Source Models_**	| ---	| ---	| ---	| ---	| ---	| ---
+Qwen-2.5-7B	| 3.96	| 16.5	| 2.1	| 1.4	| 6.2	| 6.0
+Qwen-2.5-7B + Search	| 50.8	| 23.3	| 10.1	| 3.0	| 13.6	| 20.2
+Qwen3-4B	| 3.8	| 14.7	| 2.6	| 2.1	| 9.0	| 6.4
+Qwen3-4B + Search	| 67.7	| 27.2	| 17.5	| 6.2	| 18.7	| 27.5
+ZeroSearch-3B	| 51.9	| 11.3	| 8.7	| 7.1	| 13.8	| 18.6
+ZeroSearch-7B	| 75.3	| 30.0	| 18.2	| 6.2	| 20.6	| 30.1
+R1-Searcher-7B	| 58.8	| 37.0	| 1.8	| 1.4	| 19.1	| 23.6
+search-o1 (Qwen3-4B)	| 57.5	| 26.8	| 10.8	| 5.5	| 15.3	| 23.2
+WebSailor-3B	| 87.1	| 44.4	| **52.2**	| 9.0	| 27.4	| 44.0
+Jan-Nano-32K	| 80.7	| 36.1	| 25.0	| 6.2	| 21.4	| 33.9
+Jan-Nano-128K	| 83.2	| 43.4	| 33.7	| 6.2	| 23.9	| 38.1
+II-Search-4B	| _88.2_	| _58.7_	| 40.8	| 17.1	| _31.8_	| _47.3_
+Fathom-Search-4B (Stage-1)	| 88.1	| 57.2	| 39.0	| 19.8	| 31.3	| 47.1
+**Fathom-Search-4B (Stage-2**)	| **90.0**	|** 64.8**	| _50.0_	| **22.5**	| **33.2**	| **52.1**
+## Results
+
+
+**Generalization across domains**.
+Unlike most models that drop on out-of-distribution tasks, Fathom-Search-4B generalizes well. On GPQA-D and MedQA, Fathom-Search (Stage-2) achieves 60.1% and 75.4%, surpassing WebSailor-3B and ZeroSearch-3B by +23–25 pp, despite no domain-specific finetuning.
+
+Model	| HLE	| AIME-25	| GPQA-D	| MedQA	| Avg
+--- | ---	| ---	| ---	| ---	| ---
+Closed-Source Models	| ---	| ---	| ---	| ---	| ---
+GPT-4o (without search)	| 2.3	| 71.0	| 53.0	| 88.2	| 53.6
+o3 (without search)	| 20.3	| **88.9**	| **85.4**	| 95.4	| _72.5_
+GPT-4o (with search)	| 4.3	| _71.0_	| _53.0_	| _88.2_	| 54.1
+o3 (with search)	| **27.4**	| **88.9**	| **85.4**	| **95.4**	| **74.3**
+Open-Source Models	| ---	| ---	| ---	| ---	| ---
+Qwen-2.5-7B	| 1.2	| 10	| 33.0	| 61.2	| 24.7
+Qwen-2.5-7B + Search	| 2.4	| 10	| 33.5	| 62.0	| 25.3
+Qwen3-4B	| 4.2	| _65.0_	| 55.1	| 71.0	| 48.8
+Qwen3-4B + Search	| 6.2	| _65.0_	| 55.9	| 72.0	| 49.8
+ZeroSearch-3B	| 3.4	| 10.0	| 14.6	| 51.0	| 17.3
+ZeroSearch-7B	| 4.2	| 10.0	| 29.3	| 57.5	| 22.8
+R1-Searcher-7B	| 2.1	| 10.0	| 33.3	| 56.5	| 25.5
+search-o1 (Qwen3-4B)	| 3.4	| 40.0	| 30.5	| 53.7	| 31.9
+WebSailor-3B	| 7.4	| 40.0	| 45.5	| 51.3	| 36.0
+Jan-Nano-32K	| 5.5	| 60.0	| 37.4	| 66.0	| 42.2
+Jan-Nano-128K	| 6.1	| 53.3	| 51.0	| 65.4	| 44.0
+II-Search-4B	| _7.4_	| 60.0	| _51.5_	| _72.1_	| 47.8
+Fathom-Search-4B (Stage-1)	| 6.7	| 60.0	| 55.6	| **75.4**	| _49.4_
+**Fathom-Search-4B (Stage-2)**	| **9.5**	| **70.0**	| **60.1**	| **75.4**	| 53.8
+
+Competing with closed-source models, Fathom-Search (Stage-2) outperforms GPT-4o + Search on SimpleQA, FRAMES, WebWalkerQA, HLE, and GPQA-D. It is +18.4 pp on WebWalkerQA and +7.0 pp on both Seal0 and GPQA-D, and attains ∼2× the accuracy of GPT-4o + Search accuracy on the hard general-reasoning benchmark HLE
 
 ## 🚀 Inference
 
@@ -44,7 +112,7 @@ uv pip install flash-attn==2.8.2 --no-build-isolation --no-cache
 playwright install
 ```
 
-### 2) Start the Tool Server (Serper/Jina)
+### 2) Start the Tool Server (Serper+Jina)
 
 Set the following in `web_agents/host.sh`:
 
@@ -96,7 +164,7 @@ Tips:
 
 ---
 
-## 📊 Evaluation (Multi GPU)
+## 🧮 Evaluation (Multi GPU)
 
 This section covers **batched evaluation** using the provided scripts in `scripts/`. Use placeholders `model_path` and `dataset_name` — the evaluator will read `eval_benchmarks/<dataset_name>.jsonl` with columns `['id','question','answer']`.
 
@@ -184,33 +252,6 @@ scripts/eval_search_o1.sh \
   --model-port 1255 \
   --dataset dataset_name
 ```
-
-## Results
-
-We evaluate **Fathom‑Search-4B** and compare with several baseline models across 9 challenging benchmarks
-
-| Model   | SimpleQA | FRAMES  | WebWalker | Seal0 | Musique | **Avg**  | HLE  | AIME-25 | GPQA-D  | MedQA | Avg   |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| <td colspan="12" style="text-align:center;">**Closed-Source Models** </td>   |
-| GPT-4o (without search)                        | 34.7                                               | 52.4                                                      | 3.2                | 7.2            | 34.0             | 26.3          | 2.3           | _71.0_   | _53.0_   | _88.2_   | 53.6          |
-| o3 (without search)                            | 49.4                                               | 43.2                                                      | 14.0               | 14.0           | _48.9_      | 33.9          | _20.3_   | **88.9** | _85.4_   | **95.4** | _72.5_   |
-| GPT-4o (with search)                           | _84.4_                                        | _63.7_                                               | _31.6_        | _15.3_    | 37.5             | _46.5_   | 4.3           | _71.0_   | _53.0_   | _88.2_   | 54.1          |
-| o3 (with search)                               | **96.0**                                      | **86.8**                                             | **57.0**      | **49.5**  | **51.2**    | **68.1** | **27.4** | **88.9** | **85.4** | **95.4** | **74.3** |
-| <td colspan="12" style="text-align:center;">**Open-Source Models** </td>   |
-| Qwen-2.5-7B                                    | 3.96                                               | 16.5                                                      | 2.1                | 1.4            | 6.2              | 6.0           | 1.2           | 10            | 33.0          | 61.2          | 24.7          |
-| Qwen-2.5-7B + Search                           | 50.8                                               | 23.3                                                      | 10.1               | 3.0            | 13.6             | 20.2          | 2.4           | 10            | 33.5          | 62.0          | 25.3          |
-| Qwen3-4B                                       | 3.8                                                | 14.7                                                      | 2.6                | 2.1            | 9.0              | 6.4           | 4.2           | _65.0_   | 55.1          | 71.0          | 48.8          |
-| Qwen3-4B + Search                              | 67.7                                               | 27.2                                                      | 17.5               | 6.2            | 18.7             | 27.5          | 6.2           | _65.0_   | _55.9_   | 72.0          | 49.8          |
-| ZeroSearch-3B                                  | 51.9                                               | 11.3                                                      | 8.7                | 7.1            | 13.8             | 18.6          | 3.4           | 10.0          | 14.6          | 51.0          | 17.3          |
-| ZeroSearch-7B                                  | 75.3                                               | 30.0                                                      | 18.2               | 6.2            | 20.6             | 30.1          | 4.2           | 10.0          | 29.3          | 57.5          | 22.8          |
-| R1-Searcher-7B                                 | 58.8                                               | 37.0                                                      | 1.8                | 1.4            | 19.1             | 23.6          | 2.1           | 10.0          | 33.3          | 56.5          | 25.5          |
-| search-o1 (Qwen3-4B)                           | 57.5                                               | 26.8                                                      | 10.8               | 5.5            | 15.3             | 23.2          | 3.4           | 40.0          | 30.5          | 53.7          | 31.9          |
-| WebSailor-3B                                   | 87.1                                               | 44.4                                                      | **52.2**      | 9.0            | 27.4             | 44.0          | 7.4           | 40.0          | 45.5          | 51.3          | 36.0          |
-| Jan-Nano-32K                                   | 80.7                                               | 36.1                                                      | 25.0               | 6.2            | 21.4             | 33.9          | 5.5           | 60.0          | 37.4          | 66.0          | 42.2          |
-| Jan-Nano-128K                                  | 83.2                                               | 43.4                                                      | 33.7               | 6.2            | 23.9             | 38.1          | 6.1           | 53.3          | 51.0          | 65.4          | 44.0          |
-| II-Search-4B                                   | _88.2_                                        | _58.7_                                               | 40.8               | 17.1           | _31.8_      | _47.3_   | _7.4_    | 60.0          | _51.5_   | _72.1_   | 47.8          |
-| **Fathom-Search-4B (Stage-1)** | 88.1                                               | 57.2                                                      | 39.0               | _19.8_    | 31.3             | 47.1          | 6.7           | 60.0          | 55.6          | **75.4** | _49.4_   |
-| **Fathom-Search-4B (Stage-2)** | **90.0**                                      | **64.8**                                             | _50.0_      | **22.5**  | **33.2**    | **52.1** | **9.5**  | **70.0** | **60.1** | **75.4** | **53.8** |
 
 ---
 
