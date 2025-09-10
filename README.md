@@ -28,22 +28,24 @@ However, scaling DeepSearch capability faces three key challenges:
 
 To this end, we introduce a post-training recipe to create state-of-the-art DeepSearch enabled reasoning model, Fathom-Search-4B. We enlist our key contributions below:
 
+- 🏆 **Fathom-Search-4B**: SOTA 4B-parameter model trained to browse, extract, verify and reason over live web content acheiving SOTA Deep search benchmarks.
+- 🛠 **Long Horizon tool calling**: Capable of making 20+ tool calls.
 - 📚 **DUETQA**: We build a 5K example dataset created through multi-agent self-play, designed to require live web search to answer its queries.
 - 🏋️ **Training Recepie**: Two-stage RL-zero training that provides coarse control over the exploration and verification strategies developed by the model.
 - 🧠 **RAPO**: Zero-overhead modification of GRPO that stabilizes multi-turn RL through dataset pruning, advantage scaling, and replay buffers.
-- 🛠️ **Steerable step-level reward**: We design a novel step level reward that enables fine-grained control over long-horizon tool use, which scales tool use beyond 20+ calls.
-- 🏆 **Fathom-Search-4B**: SOTA 4B-parameter model trained to browse, extract, verify and reason over live web content acheiving SOTA Deep search benchmarks. Rather than memorizing facts, it learns how to find, test and trust
+- ⚙️ **Steerable step-level reward**: We design a novel step level reward that enables fine-grained control over long-horizon tool use, which scales tool use beyond 20+ calls.
 
 We also release our data generation pipeline, our custom web tools which we believe will help the community to progress further in the reasoning domain.
 
 ---
 
-## 📊 Results
+## 📊 Key Results
+
+<p align="center"> <img src="./assets/benchmarks.png" style="width: 100%;" id="benchmark-img">       </p>
 
 **Fathom‑Search-4B** sets a new state of the art on DeepSearch benchmarks outperforming all prior open source baselines. Our model reaches average of 52.1% on DeepSearch and 53.8% on General Reasoning benchmarks—improvements of +24.6 pp and +4.0 pp over Qwen3-4B + Search. On harder benchmarks such as FRAMES and WebWalkerQA we observe ≥100% relative gains, and > 3× on Seal0. It also exceeds prior SOTA II-Search-4B and surpasses larger Qwen2.5-7B based systems such as ZeroSearch-7B and R1-Searcher-7B
 
-We evaluate Fathom‑Search-4B and compare with several baseline models across 9 challenging benchmarks
-<p align="center"> <img src="./assets/benchmarks.png" style="width: 100%;" id="benchmark-img">       </p>
+<!--We evaluate Fathom‑Search-4B and compare with several baseline models across 9 challenging benchmarks-->
 
 <!--
 Model	| SimpleQA	| FRAMES	| WebWalker	| Seal0	| Musique	| Avg
@@ -125,7 +127,7 @@ Set the following in `web_agents/host.sh`:
 Launch on **port 8901** with 16 workers:
 
 ```bash
-web_agents/host_serper.sh 8901 16
+serving/host_serper.sh 8901 16
 ```
 
 ### 3) Start the Model Server (SGLang)
