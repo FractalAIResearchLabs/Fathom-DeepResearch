@@ -43,7 +43,9 @@ We also release our data generation pipeline, our custom web tools which we beli
 **Fathom‑Search-4B** sets a new state of the art on DeepSearch benchmarks outperforming all prior open source baselines. Our model reaches average of 52.1% on DeepSearch and 53.8% on General Reasoning benchmarks—improvements of +24.6 pp and +4.0 pp over Qwen3-4B + Search. On harder benchmarks such as FRAMES and WebWalkerQA we observe ≥100% relative gains, and > 3× on Seal0. It also exceeds prior SOTA II-Search-4B and surpasses larger Qwen2.5-7B based systems such as ZeroSearch-7B and R1-Searcher-7B
 
 We evaluate Fathom‑Search-4B and compare with several baseline models across 9 challenging benchmarks
+<p align="center"> <img src="./assets/benchmarks.png" style="width: 100%;" id="benchmark-img">       </p>
 
+<!--
 Model	| SimpleQA	| FRAMES	| WebWalker	| Seal0	| Musique	| Avg
 --- | ---	| ---	| ---	| ---	| ---	| ---
 **_Closed-Source Models_**	| ---	| ---	| ---	| ---	| ---	| ---
@@ -69,10 +71,6 @@ Fathom-Search-4B (Stage-1)	| 88.1	| 57.2	| 39.0	| 19.8	| 31.3	| 47.1
 **Fathom-Search-4B (Stage-2**)	| **90.0**	| **64.8**	| _50.0_	| **22.5**	| **33.2**	| **52.1**
 ## Results
 
-
-**Generalization across domains**.
-Unlike most models that drop on out-of-distribution tasks, Fathom-Search-4B generalizes well. On GPQA-D and MedQA, Fathom-Search (Stage-2) achieves 60.1% and 75.4%, surpassing WebSailor-3B and ZeroSearch-3B by +23–25 pp, despite no domain-specific finetuning.
-
 Model	| HLE	| AIME-25	| GPQA-D	| MedQA	| Avg
 --- | ---	| ---	| ---	| ---	| ---
 Closed-Source Models	| ---	| ---	| ---	| ---	| ---
@@ -95,6 +93,10 @@ Jan-Nano-128K	| 6.1	| 53.3	| 51.0	| 65.4	| 44.0
 II-Search-4B	| _7.4_	| 60.0	| _51.5_	| _72.1_	| 47.8
 Fathom-Search-4B (Stage-1)	| 6.7	| 60.0	| 55.6	| **75.4**	| _49.4_
 **Fathom-Search-4B (Stage-2)**	| **9.5**	| **70.0**	| **60.1**	| **75.4**	| 53.8
+-->
+
+**Generalization across domains**.
+Unlike most models that drop on out-of-distribution tasks, Fathom-Search-4B generalizes well. On GPQA-D and MedQA, Fathom-Search (Stage-2) achieves 60.1% and 75.4%, surpassing WebSailor-3B and ZeroSearch-3B by +23–25 pp, despite no domain-specific finetuning.
 
 Competing with closed-source models, Fathom-Search (Stage-2) outperforms GPT-4o + Search on SimpleQA, FRAMES, WebWalkerQA, HLE, and GPQA-D. It is +18.4 pp on WebWalkerQA and +7.0 pp on both Seal0 and GPQA-D, and attains ∼2× the accuracy of GPT-4o + Search accuracy on the hard general-reasoning benchmark HLE
 
