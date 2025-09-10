@@ -1,4 +1,4 @@
-# 🧮 Fathom-Search: A deep search agent
+# 🧮 Fathom-Search: Unlocking Long-Horizon DeepSearch
 
 <div align="center">
   
@@ -269,8 +269,8 @@ We would like to acknowledge the following works for enabling our project:
 ## 📖 Citation
 
 ```bibtex
-@misc{fathomsearch4b2025,
-  title={Fathom-Search: A deep search agent},
+@misc{fathomsearch2025,
+  title={Fathom-Search: Unlocking Long-Horizon DeepSearch},
   author={Shreyas Singh and Pradeep Moturi and Kunal Singh},
   howpublished={\url{https://huggingface.co/FractalAIResearch/Fathom-Search-4B}},
   note={Hugging Face},
