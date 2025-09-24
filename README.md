@@ -24,18 +24,18 @@ However, scaling DeepSearch capability faces three key challenges:
 - algorithmic instability in multi-turn reinforcement learning (RL) with tools
 - lazy tool calling behavior which hinders scaling deep information exploration and retrieval capabilities
 
-## ✨ Key Highlights
+- 🧭 **RL Zero framework for DeepSearch training.**  
+  We present a novel two-stage RL-Zero framework that helps *steer cognitive behaviors* 🧠 developed by the policy model, such as exploration 🧭 and verification ✅ during training.
 
-To this end, we introduce a post-training recipe to create state-of-the-art DeepSearch enabled reasoning model, Fathom-Search-4B. We enlist our key contributions below:
+- ⚡ **RAPO: Reward Aware Policy Optimization.**  
+  We introduce a zero-overhead modification of GRPO with *dataset pruning ✂️, advantage scaling 📈, replay buffers 🔁, and a steerable step-level reward 🎚* that stabilizes multi-turn RL and enables long-horizon tool use ⏳.
 
-- 🏆 **Fathom-Search-4B**: SOTA 4B-parameter model trained to browse, extract, verify and reason over live web content acheiving SOTA Deep search benchmarks.
-- 🛠 **Long Horizon tool calling**: Capable of making 20+ tool calls.
-- 📚 **DUETQA**: We build a 5K example dataset created through multi-agent self-play, designed to require live web search to answer its queries.
-- 🏋️ **Training Recepie**: Two-stage RL-zero training that provides coarse control over the exploration and verification strategies developed by the model.
-- 🧠 **RAPO**: Zero-overhead modification of GRPO that stabilizes multi-turn RL through dataset pruning, advantage scaling, and replay buffers.
-- ⚙️ **Steerable step-level reward**: We design a novel step level reward that enables fine-grained control over long-horizon tool use, which scales tool use beyond 20+ calls.
+- 🎭 **DuetQA.**  
+  We release a 5K-sample dataset 📚 created through our novel *multi-agent self-play pipeline 🎮🤝*, containing verifiable question–answer pairs that are impossible to answer without *live web search* 🌍, for DeepSearch model training.
 
-We also release our data generation pipeline, our custom web tools which we believe will help the community to progress further in the reasoning domain.
+- 📝 **DeepResearch-SFT.**  
+  A synthetic SFT corpus 🧾 for converting downstream search/investigation traces 🔍 of DeepSearch-enabled models into DeepResearch reports 📑 via an explicit *plan-then-write* protocol ✍️.
+
 
 ---
 
@@ -118,11 +118,13 @@ playwright install
 
 ### 2) Start the Tool Server (Serper+Jina)
 
-Set the following in `web_agents/host.sh`:
+Set the following in `scripts/.env`:
 
-- **SERPER_API_KEY** (get from serper.dev; ~2,500 free queries without any card) (necessary fror live web-search)
+- **SERPER_API_KEY** (get from serper.dev; ~2,500 free queries without any card) (necessary for live web-search)
 - **JINA_API_KEY** (optional) — used in the web-page extraction pipeline (recommended for replicatiion)
 - **OPENAI_API_KEY** (optional) — for goal conditioned querying of web-pages using GPT-4.1-mini (recommended for replicatiion)
+- **SERPER_CACHE_DIR**  — path to caching the search results from serper.dev to save cost and retrival time 
+- **JINA_CACHE_DIR**  — path to caching the search results from jina.ai to save cost and retrival time 
 
 Launch on **port 8901** with 16 workers:
 
@@ -130,14 +132,15 @@ Launch on **port 8901** with 16 workers:
 serving/host_serper.sh 8901 16
 ```
 
-### 3) Start the Model Server (SGLang)
-
-Change `--model-path` to your model identifier or local path (e.g., `FractalAIResearch/Fathom-Searcher` or `model_path`). Default port below is **8902**.
-
+### 3) Start the Model Servers (SGLang)
+Change `--model-path` to your model identifier or local path (e.g., `FractalAIResearch/Fathom-Search-4B` or `model_path`).
+#### Fathom-Search-4B
+Default port below for is **8902** .
 ```bash
+export CUDA_VISIBLE_DEVICES=0,1
 python -m sglang.launch_server \
-  --served-model-name Qwen3-4B \
-  --model-path FractalAIResearch/Fathom-Searcher \
+  --served-model-name  Fathom-Search-4B \
+  --model-path FractalAIResearch/Fathom-Search-4B \
   --enable-metrics \
   --dtype bfloat16 \
   --host 0.0.0.0 \
@@ -148,22 +151,42 @@ python -m sglang.launch_server \
   --context-length 40960 \
   --tp 2 #optional for multi-gpu inference
 ```
+#### Fathom-Synthesizer-4B
+Default port below for is **8902**, we use YARN scaling with RoPE factor 2.0 for the synthesizer model
+```
+export CUDA_VISIBLE_DEVICES=2,3
+python3 -m sglang.launch_server \
+         --served-model-name Fathom-Synthesizer-4B \
+         --model-path FractalAIResearch/Fathom-Synthesizer-4B \
+         --tp 2 \
+         --enable-metrics \
+         --dtype bfloat16 \
+         --host 0.0.0.0 \
+         --port 8903 \
+         --trust-remote-code \
+         --disable-radix-cache \
+         --disable-cuda-graph \
+         --disable-cuda-graph \
+         --context-length 131092 \
+         --json-model-override-args '{"rope_type":"yarn","factor":2.0,"original_max_position_embeddings":40960}'
+```
 
 ### 4) Single‑question inference
 
 Run **Fathom‑Search** via `inference.py`:
 
 ```bash
-python inference.py \
-  --agent fathom-search \
-  --question "Who is the current RBI Governor and when did they take office?" \
-  --executors http://0.0.0.0:8901 \
-  --model-url http://0.0.0.0:8902 \
-  --search-preset fathom
+ python inference.py \
+    --question "Do 1 search_urls call and 1 query_url call to find out the Date of Birth of Adolf Hitler?" \
+    --executors http://0.0.0.0:8901 \
+    --model-url http://0.0.0.0:8902 \
+    --tokenizer FractalAIResearch/Fathom-Search-4B \
+    --summary-llm http://0.0.0.0:8903 \
+    --deepresearch 
 ```
 
 Tips:
-- Use multiple executors for load‑balancing: `--executors http://0.0.0.0:8901,http://0.0.0.0:8903`.
+- Use multiple executors for load‑balancing: `--executors http://0.0.0.0:8901, http://0.0.0.0:8903`.
 
 
 ---
@@ -186,9 +209,9 @@ This section covers **batched evaluation** using the provided scripts in `script
 | `--main-gpus` | ⬜ | `0,1` | CUDA devices for the main model. |
 | `--query-gpus` | ⬜ | `2,3` | CUDA devices for the query LLM. |
 
-### Evaluate Fathom‑Search (recommended starting point)
+### Evaluate Fathom‑Search
 
-**GPT-4.1-mini query-LLM on CPU, main model on GPUs 0,1 (TP=1)**
+**GPT-4.1-mini query-LLM on CPU, main model on GPUs 0,1 (TP=2)**
 
 ```bash
 scripts/eval_fathom_search.sh \
@@ -200,7 +223,7 @@ scripts/eval_fathom_search.sh \
   --query-llm gpt-4.1-mini
 ```
 
-**Local Qwen as extractor on GPUs 2,3 (TP=2); main model on GPUs 0,1 (TP=2)**
+**Local Qwen3-4B as extractor on GPUs 2,3 (TP=2); main model on GPUs 0,1 (TP=2)**
 
 ```bash
 scripts/eval_fathom_search.sh \
