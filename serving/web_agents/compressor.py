@@ -1,9 +1,9 @@
 # compressor.py
 from __future__ import annotations
-import functools, json, logging, re
+import functools, json, logging, os, re
 from difflib import SequenceMatcher
 from io import StringIO
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union
 
 import pandas as pd
 import regex  # needed by tiktoken
@@ -11,17 +11,20 @@ import tiktoken
 from bs4 import BeautifulSoup
 from config import CFG
 from web_helpers import retry
+import requests
 
 # ────────────────────────────────────────────────────────────────────────
 # 0. shared helpers
 # ------------------------------------------------------------------------
 enc = tiktoken.get_encoding("cl100k_base")
-_tok = lambda s: len(enc.encode(s))                     # fast inline counter
+_tok = lambda s: len(enc.encode(s))  # fast inline counter
+
 
 @functools.lru_cache(maxsize=1)
 def _nlp():
     import spacy
     return spacy.load("en_core_web_sm")
+
 
 def _openai_client():
     """Import OpenAI lazily to avoid overhead when not needed."""
@@ -29,10 +32,33 @@ def _openai_client():
     mod = importlib.import_module("openai")
     return getattr(mod, "OpenAI", None)() if hasattr(mod, "OpenAI") else mod
 
+
+# ────────────────────────────────────────────────────────────────────────
+# Together helpers (SDK first, requests fallback)
+# ------------------------------------------------------------------------
+def _together_api_key() -> str:
+    key = os.getenv("TOGETHER_API_KEY")
+    if not key:
+        raise RuntimeError("TOGETHER_API_KEY environment variable is not set.")
+    return key
+
+
+def _together_client():
+    """Return a Together SDK client if available; else None (we’ll fallback to requests)."""
+    try:
+        import importlib
+        mod = importlib.import_module("together")
+        # SDK exposes class `Together`
+        return getattr(mod, "Together")(_together_api_key())
+        print("imported together")
+    except Exception:
+        return None
+
+
 # ────────────────────────────────────────────────────────────────────────
 # 1. regex patterns (compiled once)
 # ------------------------------------------------------------------------
-DATE_PATS   = [re.compile(p, re.I) for p in [
+DATE_PATS = [re.compile(p, re.I) for p in [
     r"\d{4}-\d{2}-\d{2}",
     r"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2},\s+\d{4}",
     r"(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s+\d{4}",
@@ -40,24 +66,41 @@ DATE_PATS   = [re.compile(p, re.I) for p in [
     r"\b\d{4}/\d{2}\b",
     r"\b\d{4}\b(?!\s*(?:%|million|billion|thousand))",
 ]]
-EMAIL_PAT   = re.compile(r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+")
-URL_PAT     = re.compile(r"https?://[^\s\)]+")
-PHONE_PAT   = re.compile(r"\+?\d[\d\s\-().]{7,}\d")
-CURR_PAT    = re.compile(r"(\$\s?\d+(?:,\d{3})*(?:\.\d+)?|\d+(?:,\d{3})*(?:\.\d+)?\s*(USD|EUR|GBP|INR|¥|₩|₹|€))", re.I)
-DEF_PAT     = re.compile(r"([A-Z][A-Za-z0-9\s]+?)\s+(is|are|refers to|means)\s+(.*?)(?:[\.\n])")
+EMAIL_PAT = re.compile(r"[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+")
+URL_PAT = re.compile(r"https?://[^\s\)]+")
+PHONE_PAT = re.compile(r"\+?\d[\d\s\-().]{7,}\d")
+CURR_PAT = re.compile(r"(\$\s?\d+(?:,\d{3})*(?:\.\d+)?|\d+(?:,\d{3})*(?:\.\d+)?\s*(USD|EUR|GBP|INR|¥|₩|₹|€))", re.I)
+DEF_PAT = re.compile(r"([A-Z][A-Za-z0-9\s]+?)\s+(is|are|refers to|means)\s+(.*?)(?:[\.\n])")
 
-MD_TABLE_PAT = re.compile(
-    r"(?:^\|.*?\|\n?)+(?:^\|[-:\s|]+\|\n?)?(?:^\|.*?\|\n?)+", re.M)
-CSV_PAT      = re.compile(r"((?:^.*?,.*?\n){2,})", re.M)
-TSV_PAT      = re.compile(r"((?:^.*?\t.*?\n){2,})", re.M)
+MD_TABLE_PAT = re.compile(r"(?:^\|.*?\|\n?)+(?:^\|[-:\s|]+\|\n?)?(?:^\|.*?\|\n?)+", re.M)
+CSV_PAT = re.compile(r"((?:^.*?,.*?\n){2,})", re.M)
+TSV_PAT = re.compile(r"((?:^.*?\t.*?\n){2,})", re.M)
+
+
+# ────────────────────────────────────────────────────────────────────────
+# helper: model routing detectors
+# ------------------------------------------------------------------------
+def _is_openai_model(model_name: str) -> bool:
+    """Heuristic: treat strings that begin with 'gpt-' as OpenAI model names."""
+    return model_name.lower().startswith("openai:")
+
+
+def _is_together_model(model_name: str) -> bool:
+    """
+    Treat strings that begin with 'together:' as Together model names.
+    Example: 'together:meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo'
+    """
+    return model_name.lower().startswith("together:")
+
 
 # ────────────────────────────────────────────────────────────────────────
 # 2. core utilities
 # ------------------------------------------------------------------------
 def deduplicate_items(items: List[str], *, similarity=0.5,
                       other: List[str] | None = None) -> List[str]:
-    """Drop near‑duplicates; prefer the longest variant."""
-    if not items: return []
+    """Drop near-duplicates; prefer the longest variant."""
+    if not items:
+        return []
     other = other or []
 
     def _clean(x: str) -> str:
@@ -82,6 +125,7 @@ def deduplicate_items(items: List[str], *, similarity=0.5,
             out_clean.append(clean)
     return out
 
+
 # ────────────────────────────────────────────────────────────────────────
 # 3. fact & table extractor
 # ------------------------------------------------------------------------
@@ -92,12 +136,18 @@ def extract_facts_and_tables(text: str) -> Tuple[str, List[str], List[str]]:
         facts.append(match.group())
         spans.append(match.span())
 
-    for pat in DATE_PATS:   [_add(m) for m in pat.finditer(text)]
-    for m in EMAIL_PAT.finditer(text):   _add(m)
-    for m in URL_PAT.finditer(text):     _add(m)
-    for m in PHONE_PAT.finditer(text):   _add(m)
-    for m in CURR_PAT.finditer(text):    _add(m)
-    for m in DEF_PAT.finditer(text):     _add(m)
+    for pat in DATE_PATS:
+        [_add(m) for m in pat.finditer(text)]
+    for m in EMAIL_PAT.finditer(text):
+        _add(m)
+    for m in URL_PAT.finditer(text):
+        _add(m)
+    for m in PHONE_PAT.finditer(text):
+        _add(m)
+    for m in CURR_PAT.finditer(text):
+        _add(m)
+    for m in DEF_PAT.finditer(text):
+        _add(m)
 
     # contextual sentences around facts
     doc = _nlp()(text)
@@ -107,12 +157,13 @@ def extract_facts_and_tables(text: str) -> Tuple[str, List[str], List[str]]:
     facts = sorted(set(facts))
 
     # ── tables
-    tables = []
+    tables: List[str] = []
 
     for tbl in MD_TABLE_PAT.findall(text):
         cleaned = "\n".join(l for l in tbl.splitlines()
                             if l.strip() and not re.match(r"^\|[-:\s|]+\|$", l))
-        if len(cleaned.splitlines()) < 2: continue
+        if len(cleaned.splitlines()) < 2:
+            continue
         try:
             df = pd.read_csv(StringIO(cleaned), sep="|").dropna(how="all", axis=1)
             tables.append(df.to_markdown(index=False))
@@ -144,14 +195,17 @@ def extract_facts_and_tables(text: str) -> Tuple[str, List[str], List[str]]:
 
     # ── clean narrative (remove facts & tables)
     narrative = text
-    for tbl in tables: narrative = narrative.replace(tbl, " ")
-    for s, e in sorted(spans, reverse=True): narrative = narrative[:s] + narrative[e:]
+    for tbl in tables:
+        narrative = narrative.replace(tbl, " ")
+    for s, e in sorted(spans, reverse=True):
+        narrative = narrative[:s] + narrative[e:]
     narrative = re.sub(r"\s{2,}", " ", narrative).strip()
 
     return narrative, facts, tables
 
+
 # ────────────────────────────────────────────────────────────────────────
-# 4. OpenAI summariser helpers
+# 4. OpenAI & Together & vLLM summariser helpers
 # ------------------------------------------------------------------------
 def _summarise(text: str, pct: float, model: str) -> str:
     target_tokens = int(_tok(text) * pct)
@@ -161,21 +215,36 @@ def _summarise(text: str, pct: float, model: str) -> str:
         "while **retaining all key facts, figures, names, dates, places, and events**. "
         "Ensure the summary remains accurate, informative, and faithful to the original content."
     )
-    client = _openai_client()
-    rsp = client.chat.completions.create(
-        model=model, temperature=0.2,
-        messages=[{"role":"system","content":sys_prompt},
-                  {"role":"user","content":text}],
-        max_tokens=CFG.output_limit_per_link
-    )
-    return rsp.choices[0].message.content
+    if _is_openai_model(model):
+        client = _openai_client()
+        rsp = client.chat.completions.create(
+            model=model, temperature=0.2,
+            messages=[{"role": "system", "content": sys_prompt},
+                      {"role": "user", "content": text}],
+            max_tokens=CFG.output_limit_per_link
+        )
+        return rsp.choices[0].message.content
+    elif _is_together_model(model):
+        return _call_together_chat(
+            model, sys_prompt, text,
+            temperature=0.2,
+            max_tokens=CFG.output_limit_per_link
+        )
+    else:
+        # Treat as sglang/vLLM base URL (non-chat); inline system+user into single prompt
+        merged = sys_prompt + "\n\n" + text
+        return _call_sglang(
+            model, merged,
+            temperature=0.2,
+            max_tokens=CFG.output_limit_per_link
+        )
+
 
 # ────────────────────────────────────────────────────────────────────────
 # 5. compress_text  (public)
 # ------------------------------------------------------------------------
 def compress_text(text: str, *, pct: float = 0.3,
-                  model: str = "gpt-4o-mini") -> Dict[str, str]:
-
+                  model: str = "gpt-4o-mini") -> str:
     FACTS_TABLES_LIMIT = CFG.output_limit_per_link - CFG.disable_narrative_compress_thresh
     narrative, facts, tables = extract_facts_and_tables(text)
 
@@ -186,8 +255,9 @@ def compress_text(text: str, *, pct: float = 0.3,
         narrative_txt = narrative
     return narrative_txt
 
+
 # ────────────────────────────────────────────────────────────────────────
-# 6. query_text  (goal‑oriented extraction)
+# 6. query_text  (goal-oriented extraction)
 # ------------------------------------------------------------------------
 EXTRACTOR_SYS_PROMPT = (
     "You are a highly skilled information extraction agent. Your job is to analyze long, complex webpages "
@@ -215,6 +285,7 @@ Evidence: <first point>\n<second point>...
 Summary:<concise paragraph summarizing the evidence>
 """
 
+
 def extract_regex(text: str) -> Dict[str, str]:
     def extract_section(header: str) -> str:
         # Match the section starting with `Header:` until the next capitalized line followed by `:` or end
@@ -228,28 +299,30 @@ def extract_regex(text: str) -> Dict[str, str]:
         "summary": extract_section("Summary")
     }
 
+
 def _call_openai(model: str, prompt: str, *, temperature: float,
                  max_tokens: int) -> str:
-    """One‑shot call to the OpenAI chat endpoint; returns raw text."""
+    """One-shot call to the OpenAI chat endpoint; returns raw text."""
+    model_id = model.split(":", 1)[1] if ":" in model else model
     client = _openai_client()
     rsp = client.chat.completions.create(
-        model=model,
+        model=model_id,
         temperature=temperature,
         messages=[
             {"role": "system", "content": EXTRACTOR_SYS_PROMPT},
-            {"role": "user",    "content": prompt},
+            {"role": "user", "content": prompt},
         ],
         max_tokens=max_tokens,
     )
     return rsp.choices[0].message.content
 
-def _call_vllm(base_url: str, prompt: str, *, temperature: float,
-               max_tokens: int, stop: list[str] | None = None) -> str:
+
+def _call_sglang(base_url: str, prompt: str, *, temperature: float,
+               max_tokens: int, stop: List[str] | None = None) -> str:
     """
     Call a vLLM REST endpoint that exposes POST {base_url}/generate.
     Returns the generated text (1st candidate).
     """
-   
     payload = {
         "text": prompt,
         "sampling_params": {
@@ -258,7 +331,7 @@ def _call_vllm(base_url: str, prompt: str, *, temperature: float,
             "repetition_penalty": 1.05
         },
     }
-    if stop:                                  # only include if provided
+    if stop:  # only include if provided
         payload["sampling_params"]["stop"] = stop
 
     resp = requests.post(
@@ -276,13 +349,68 @@ def _call_vllm(base_url: str, prompt: str, *, temperature: float,
             return txt[0]
         return txt
 
-    # print(data)
-
     raise ValueError(f"Unexpected vLLM response shape: {data!r}")
-    
-def _is_openai_model(model_name: str) -> bool:
-    """Heuristic: treat strings that begin with 'gpt-' as OpenAI model names."""
-    return model_name.lower().startswith("gpt-")
+
+
+def _call_together_chat(model: str, user: str, *,
+                        temperature: float, max_tokens: int,
+                        stop: List[str] | None = None) -> str:
+    """
+    Together chat call using the SDK when available, otherwise raw requests.
+    `model` may be prefixed with 'together:' and will be stripped for the API.
+    """
+    model_id = model.split(":", 1)[1] if ":" in model else model
+    print(model_id)
+    print("+"*100)
+    # Prefer SDK (matches your snippet)
+    client = _together_client()
+    if client is not None:
+        print("ITHE"*10)
+        resp = client.chat.completions.create(
+            model=model_id,
+            messages=[
+                {"role": "system", "content": EXTRACTOR_SYS_PROMPT},
+                {"role": "user", "content": user},
+            ],
+            temperature=temperature,
+            top_p=1.0,
+            max_tokens=max_tokens,
+            stop=stop,
+        )
+        try:
+            return resp.choices[0].message.content
+        except Exception:
+            raise ValueError(f"Unexpected Together SDK response shape: {resp!r}")
+
+    # Fallback: raw HTTP (if SDK not installed)
+    headers = {
+        "Authorization": f"Bearer {_together_api_key()}",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "model": model_id,
+        "messages": [
+            {"role": "system", "content": EXTRACTOR_SYS_PROMPT},
+            {"role": "user", "content": user},
+        ],
+        "temperature": temperature,
+        "top_p": 1.0,
+        "max_tokens": max_tokens,
+        "stop": stop,
+    }
+    resp = requests.post(
+        "https://api.together.xyz/v1/chat/completions",
+        headers=headers,
+        json=payload,
+        timeout=60,
+    )
+    resp.raise_for_status()
+    data = resp.json()
+    try:
+        return data["choices"][0]["message"]["content"]
+    except Exception:
+        raise ValueError(f"Unexpected Together response shape: {data!r}")
+
 
 def query_text(
     url: str,
@@ -291,25 +419,42 @@ def query_text(
     *,
     model: str = "gpt-4.1-mini",
     max_attempts: int = 3,
+    temperature=0,
+    max_tokens=1024
 ) -> Dict[str, str]:
-    """Goal‑oriented extractor with retries → compress fallback → token trim fallback."""
+    """Goal-oriented extractor with retries → compress fallback → token trim fallback."""
     prompt = EXTRACTOR_PROMPT_TEMPLATE.format(
         webpage_content=text[:15_000],  # clip for safety
         goal=goal,
     )
-    # client = _openai_client()
 
     for attempt in range(1, max_attempts + 1):
         try:
             if _is_openai_model(model):
+                print("=" * 100)
+                print(f"using openai backend for q'uerying {url} with the goal '{goal}'")
+                print("=" * 100)
                 rsp_text = _call_openai(
                     model, prompt,
                     temperature=temperature,
                     max_tokens=max_tokens,
                 )
+            elif _is_together_model(model):
+                print("=" * 100)
+                print(f"using together backend for querying {url} with the goal {goal}")
+                print("=" * 100)
+                rsp_text = _call_together_chat(
+                    model,
+                    prompt,
+                    temperature=temperature,
+                    max_tokens=max_tokens,
+                )
             else:
-                rsp_text = _call_vllm(
-                    model,                # here `model` is the base URL
+                print("=" * 100)
+                print(f"using sglang backend for querying {url} with the goal '{goal}'")
+                print("=" * 100)
+                rsp_text = _call_sglang(
+                    model,  # here `model` is the base URL
                     prompt,
                     temperature=temperature,
                     max_tokens=max_tokens,
@@ -319,6 +464,8 @@ def query_text(
 
             # Sanity check: evidence + summary must be > 20 characters
             if len(extracted.get("evidence", "")) + len(extracted.get("summary", "")) > 20:
+                print("Evidence:", extracted.get("evidence", ""))
+                print("Summary:", extracted.get("summary", ""))
                 return {
                     "extracted_info": (
                         f"The useful information in {url} for goal “{goal}”:\n\n"
@@ -347,20 +494,28 @@ def query_text(
         logging.error("compress_text also failed: %s", ce)
 
     # ── Final fallback: hard truncate to token budget ────────────────────
+    trunc, _ = trim_to_budget(text, CFG.output_limit_per_link, is_table=False)
     return {
         "extracted_info": (
             "Goal-based extraction and compression both failed; "
-            "returning truncated webpage content:\n\n" +
-            trim_to_budget(text, CFG.output_limit_per_link, model=model)
+            "returning truncated webpage content:\n\n" + trunc
         )
     }
 
-   
+
 # ────────────────────────────────────────────────────────────────────────
-# 7. helper: trim long lists to token budget
+# 7. helper: trim long lists to token budget (string or list)
 # ------------------------------------------------------------------------
-def trim_to_budget(items: List[str], budget: int, *,
-                    is_table: bool) -> Tuple[str, int]:
+def trim_to_budget(items: Union[str, List[str]], budget: int, *, is_table: bool = False) -> Tuple[str, int]:
+    # If a single long string: clip by token budget
+    if isinstance(items, str):
+        toks = enc.encode(items)
+        if len(toks) <= budget:
+            return items, len(toks)
+        clipped = enc.decode(toks[:budget])
+        return clipped + f"\n[truncated to {budget} tokens]", budget
+
+    # If a list of strings: pack items until budget
     build, used = [], 0
     for it in items:
         toks = _tok(it)
@@ -369,6 +524,14 @@ def trim_to_budget(items: List[str], budget: int, *,
         build.append(it)
         used += toks
     if len(build) < len(items):
-        build.append(f"[{len(items)-len(build)} {'tables' if is_table else 'facts'} omitted]")
+        build.append(f"[{len(items) - len(build)} {'tables' if is_table else 'facts'} omitted]")
     joined = "\n\n".join(build) if is_table else "\n".join(build)
     return joined, _tok(joined)
+
+# python evals/deep_research_pairwise_evals.py \
+#   --input-data /data/home/fractal/shreyas/ydc-deep-research-evals/datasets/DeepConsult/responses_OpenAI-DeepResearch_vs_ours.csv \
+#   --output-dir /data/home/fractal/shreyas/ydc-deep-research-evals/results \
+#   --model o3-mini-2025-01-31 \
+#   --num-workers 64 \
+#   --metric-num-workers 64 \
+#   --metric-num-trials 
