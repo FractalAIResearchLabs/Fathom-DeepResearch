@@ -46,7 +46,6 @@ class ReCall():
     3. **Attention to Detail**: You will carefully analyze each information source to ensure that all data is current, relevant, and from credible origins.
 
 
-
     Here are available functions in JSONSchema format: \n```json\n{func_schemas}\n```
 
     In your response, you need to first think about the reasoning process in the mind and then conduct function calling to get the information or perform the actions if needed. \
@@ -60,11 +59,6 @@ class ReCall():
     <tool_call>
     {{"name": <function-name>, "arguments": <args-json-object>}}
     </tool_call>
-    For Multiple Choice Question always give the final answer as one of the options whichever fits the best.s
-    Always give your answer as option id. and answer.
-    Example:
-    What is the Captial of India ? 
-     \\[ \\boxed{{A. India}} \\]
     """
     
 
@@ -174,7 +168,7 @@ class ReCall():
             return []
         
     
-    @retry(max=5, sleep=1, fallback={"score": 0}) 
+    @retry(max=5, sleep=1, fallback={"score": 0})     
     def run(
         self, 
         env: str, 
@@ -189,7 +183,7 @@ class ReCall():
         all_tool_calls = []
 
     
-        for i in range(32):
+        for i in range(64):
             prompt_tokens = tokenizer(curr_prompt, return_tensors=None, add_special_tokens=False)["input_ids"]
             max_tokens_left = max_new_tokens - len(prompt_tokens) - 100
    
@@ -205,6 +199,10 @@ class ReCall():
 
                 }
             ).json()
+            print("="*100)
+            print("Thinking ....")
+            print("<think>"+response['text'])
+            print("="*100)
 
             if "error" in response.keys():
                 print("resp",response)
