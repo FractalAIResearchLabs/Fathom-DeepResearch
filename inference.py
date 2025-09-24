@@ -1,93 +1,36 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-ask_search.py — Single-question DeepSearch runner with pretty terminal output
-============================================================================
-
-- Supports the same agent families as your eval harness:
-    * fathom-search, ii-search, jan-nano  (via ReCall)
-    * zerosearch
-    * r1-searcher
-    * search-o1
-
-- Clean CLI:
-    --agent, --question (or interactive prompt), --model-url, --executors,
-    --tokenizer, --search-preset (legacy|fathom), --temperature, --max-new-tokens
-
-- Output:
-    A well-formatted terminal report showing the agent, settings, the question,
-    an extracted "Final Answer", optional tool-call summary, and the transcript.
-
-Dependencies
-------------
-- Python 3.10+
-- Your agent wrappers on PYTHONPATH (same as eval harness):
-    from agents import ReCall
-    from agents import ZeroSearchInference, ZeroSearchConfig
-    from agents import R1Searcher, R1SearchConfig as R1Cfg
-    from agents import O1Searcher, O1Cfg
-- Optional:
-    transformers (if you pass --tokenizer)
-    rich (for better terminal formatting; falls back to plain if unavailable)
-"""
-
 
 """
-# Fathom-Search with ReCall preset & two executors
-python ask_search.py \
-  --agent fathom-search \
-  --question "Who won the 2024 Nobel Prize in Physics?" \
-  --executors http://0.0.0.0:1240 \
-  --model-url http://0.0.0.0:1254 \
-  --search-preset fathom
+inference.py — Minimal Fathom-Search-4B single-question runner
+===============================================================
 
-# Jan-Nano via ReCall with tokenizer passthrough
-python ask_search.py \
-  --agent jan-nano \
-  --question "Explain CRISPR-Cas9 in two sentences." \
-  --executors http://0.0.0.0:1240 \
-  --model-url http://0.0.0.0:1254 \
-  --tokenizer /path/to/Qwen3-4B \
-  --search-preset legacy
+- Only supports Fathom-Search (ReCall-based)
+- Adds --deepresearch flag to post-process the full trace with a Summary LLM
+  (OpenAI model id or a local vLLM /generate endpoint)
+- Imports system prompts from prompt.py
 
-# II-search via ReCall with tokenizer passthrough
-python ask_search.py \
-  --agent ii-search \
-  --question "Explain CRISPR-Cas9 in two sentences." \
-  --executors http://0.0.0.0:1240 \
-  --model-url http://0.0.0.0:1254 \
-  --tokenizer /path/to/Qwen3-4B \
-  --search-preset legacy
+Env:
+  SUMMARY_LLM     (default: "openai:gpt-4.1-mini")  # e.g., "openai:gpt-4.1-mini" or host an sglang server with the desired model on port XXXX and pass "http
+  OPENAI_API_KEY  (if using OpenAI backend)
 
-# ZeroSearch
-python ask_search.py \
-  --agent zerosearch \
-  --question "What is the capital of Bhutan?" \
-  --model-url http://0.0.0.0:1254
-
-# R1-Searcher
-python ask_search.py \
-  --agent r1-searcher \
-  --question "State Hooke’s law in words." \
-  --model-url http://0.0.0.0:1254
-
-# search-o1 (o1-style search wrapper)
-python ask_search.py \
-  --agent search-o1 \
-  --question "Summarize the latest SpaceX Starship launch result." \
-  --model-url http://0.0.0.0:1254
-
+CLI:
+  --question, --model-url, --executors, --tokenizer (optional),
+  --temperature, --max-new-tokens, --no-color,
+  --deepresearch (bool),
+  --summary-llm (optional override),
+  --summary-temperature, --summary-max-tokens
 """
 
-from __future__ import annotations
+#  ./scripts/launch_inference_backend.sh fathom-search-4B /data/home/fractal/shreyas/models/models/stage1-rapo-210 1254 1255
 
 import argparse
 import os
 import random
-import re
 import sys
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
+
+# Prompts (ensure prompt.py is in PYTHONPATH or same dir)
+from prompts import DEEPRESEARCH_REPORT_SYS_PROMPT, SUMMARY_SYS_PROMPT  # type: ignore
 
 # Optional: HF tokenizer passthrough
 try:
@@ -107,32 +50,26 @@ try:
 except Exception:
     HAVE_RICH = False
 
+# HTTP for vLLM route
+try:
+    import requests  # type: ignore
+except Exception:
+    requests = None  # graceful error later if needed
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Small helpers: normalization + extraction
-# ──────────────────────────────────────────────────────────────────────────────
+
+# ──────────────────────────────────────────────────────────────
+# Helpers: normalization + boxed answer extraction
+# ──────────────────────────────────────────────────────────────
 
 def normalize(s: str) -> str:
     return (s or "").strip().lower()
 
-_ANS_TAG_RE = re.compile(r"<answer>(.*?)</answer>", re.S)
-
-def extract_answer_tagged(text: str) -> str:
-    """
-    Extract the last <answer>...</answer> block (R1-Searcher, ZeroSearch).
-    If none, return last 200 chars normalized.
-    """
-    matches = _ANS_TAG_RE.findall(text or "")
-    if matches:
-        return normalize(matches[-1])
-    return normalize((text or "")[-200:])
 
 def _boxed_last_span(s: str) -> Optional[str]:
     if s is None:
         return None
     idx = s.rfind("\\boxed")
     if "\\boxed " in s:
-        # content after the space until a '$' if present
         return "\\boxed " + s.split("\\boxed ")[-1].split("$")[0]
     if idx < 0:
         idx = s.rfind("\\fbox")
@@ -152,11 +89,8 @@ def _boxed_last_span(s: str) -> Optional[str]:
         i += 1
     return s[idx:right + 1] if right is not None else None
 
+
 def extract_answer_boxed(text: str) -> str:
-    """
-    Extract the content inside the *last* \\boxed{...} (or \\fbox{...}).
-    If none, return last 200 chars normalized.
-    """
     try:
         span = _boxed_last_span(text or "")
         if not span:
@@ -171,26 +105,15 @@ def extract_answer_boxed(text: str) -> str:
         return normalize((text or "")[-200:])
 
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Agent interface + adapters
-# ──────────────────────────────────────────────────────────────────────────────
+# ──────────────────────────────────────────────────────────────
+# Fathom-Search Agent Adapter (ReCall)
+# ──────────────────────────────────────────────────────────────
 
-class BaseAgent:
-    def run(self, *args, **kwargs) -> Tuple[str, Any]:
-        raise NotImplementedError
-
-def load_tokenizer(tokenizer_path: Optional[str] = None):
-    if not tokenizer_path:
-        return None
-    if AutoTokenizer is None:
-        raise RuntimeError("transformers not installed; cannot load tokenizer. pip install transformers")
-    return AutoTokenizer.from_pretrained(tokenizer_path, trust_remote_code=True)
-
-class ReCallAdapter(BaseAgent):
+class FathomSearchAdapter:
     def __init__(self, executor_urls: List[str]):
         from agents import ReCall  # type: ignore
         if not executor_urls:
-            raise ValueError("ReCall requires at least one --executors URL")
+            raise ValueError("Fathom-Search requires at least one --executors URL")
         self._ReCall = ReCall
         self._executor_urls = list(executor_urls)
 
@@ -218,218 +141,217 @@ class ReCallAdapter(BaseAgent):
             tokenizer=tokenizer,
         )
 
-class ZeroSearchAdapter(BaseAgent):
-    def __init__(self, thinker_url: Optional[str]):
-        from agents import ZeroSearchInference, ZeroSearchConfig  # type: ignore
-        cfg = ZeroSearchConfig(thinker_url=thinker_url)
-        self._agent = ZeroSearchInference(cfg)
 
-    def run(self, question: str, tokenizer) -> Tuple[str, Any]:
-        return self._agent.run(question, tokenizer=tokenizer)
+# ──────────────────────────────────────────────────────────────
+# ReCall tool preset (Fathom only)
+# ──────────────────────────────────────────────────────────────
 
-class R1SearcherAdapter(BaseAgent):
-    def __init__(self, model_url: Optional[str]):
-        from agents import R1Searcher, R1SearchConfig as R1Cfg  # type: ignore
-        cfg = R1Cfg(serper_api_key=os.getenv("SERPER_API_KEY", ""))
-        self._agent = R1Searcher(cfg=cfg, model_url=model_url)
-
-    def run(self, question: str, tokenizer) -> Tuple[str, Any]:
-        return self._agent.run(question, tokenizer=tokenizer)
-
-class O1SearcherAdapter(BaseAgent):
-    def __init__(self, model_url: Optional[str]):
-        from agents import O1Searcher, O1Cfg  # type: ignore
-        cfg = O1Cfg()
-        self._agent = O1Searcher(cfg, thinker_url=model_url)
-
-    def run(self, question: str, tokenizer) -> Tuple[str, Any]:
-        return self._agent.run(question, tokenizer=tokenizer)
-
-def build_agent(kind: str, model_url: Optional[str], executors: List[str]) -> BaseAgent:
-    k = (kind or "").lower()
-    if k in {"fathom-search", "ii-search", "jan-nano"}:
-        return ReCallAdapter(executor_urls=executors)
-    if k == "zerosearch":
-        return ZeroSearchAdapter(thinker_url=model_url)
-    if k == "r1-searcher":
-        return R1SearcherAdapter(model_url=model_url)
-    if k == "search-o1":
-        return O1SearcherAdapter(model_url=model_url)
-    raise ValueError(f"Unknown agent kind: {kind}")
+RECALL_ENV = "from search_api import search_urls, query_url"
+RECALL_SCHEMAS: List[Dict[str, Any]] = [
+    {
+        "name": "search_urls",
+        "description": "Google search and return links to web-pages with a brief snippet given a text query",
+        "parameters": {
+            "type": "object",
+            "properties": {"query": {"type": "string"}, "top_k": {"type": "integer", "default": 10}},
+            "required": ["query"],
+        },
+    },
+    {
+        "name": "query_url",
+        "description": "Visit webpage and return evidence based retrieval for the provided goal",
+        "parameters": {
+            "type": "object",
+            "properties": {"url": {"type": "string"}, "goal": {"type": "string"}},
+            "required": ["url", "goal"],
+        },
+    },
+]
 
 
-# ──────────────────────────────────────────────────────────────────────────────
-# ReCall tool presets (same as your harness)
-# ──────────────────────────────────────────────────────────────────────────────
+# ──────────────────────────────────────────────────────────────
+# Summary LLM backends (OpenAI or vLLM)
+# ──────────────────────────────────────────────────────────────
 
-RECALL_PRESETS: Dict[str, Tuple[str, List[Dict[str, Any]]]] = {
-    "legacy": (
-        "from search_api import web_search, web_visit",
-        [
-            {
-                "name": "web_search",
-                "description": "Google search and return links to web-pages with a brief snippet given a text query",
-                "parameters": {
-                    "type": "object",
-                    "properties": {"query": {"type": "string"}},
-                    "required": ["query"],
-                },
-            },
-            {
-                "name": "web_visit",
-                "description": "Visit webpage and return its content",
-                "parameters": {
-                    "type": "object",
-                    "properties": {"url": {"type": "string"}},
-                    "required": ["url"],
-                },
-            },
+def _openai_client():
+    try:
+        from openai import OpenAI  # type: ignore
+    except Exception as e:
+        raise RuntimeError("openai package not installed. `pip install openai`") from e
+    return OpenAI()
+
+def chatml_wrap(system_prompt: str, user_prompt: str) -> str:
+    return (
+        f"<|im_start|>system\n{system_prompt}\n<|im_end|>\n"
+        f"<|im_start|>user\n{user_prompt}\n<|im_end|>\n"
+        f"<|im_start|>assistant\n"
+    )
+
+
+# --- sglang / vLLM-style endpoint ---
+def _call_sglang(base_url: str, system_prompt: str, user_prompt: str, *,
+                 temperature: float, max_tokens: int,
+                 stop: Optional[List[str]] = None, timeout: int = 400) -> str:
+    """
+    Call an sglang server that exposes POST {base_url}/generate
+    with {"text": <prompt>, "sampling_params": {...}} and return the first text.
+    """
+    if requests is None:
+        raise RuntimeError("requests not installed. `pip install requests`")
+
+    # simple 2-turn format; keep exactly what your backend expects
+    # merged = f"[SYSTEM]\n{system_prompt}\n\n[USER]\n{user_prompt}"
+    # user_prompt = reformat_trace(user_prompt)
+    merged = chatml_wrap(system_prompt, user_prompt)
+
+
+    payload = {
+        "text": merged,
+        "sampling_params": {
+            "temperature": float(temperature),
+            "max_new_tokens": int(max_tokens),
+            "repetition_penalty": 1.05,
+        },
+    }
+    if stop:
+        payload["sampling_params"]["stop"] = stop
+
+    resp = requests.post(f"{base_url.rstrip('/')}/generate", json=payload, timeout=timeout)
+    resp.raise_for_status()
+    data = resp.json()
+    # print("data", data)
+
+    # sglang/vLLM usually returns {"text": "..."} or {"text": ["...", ...]}
+    txt = data.get("text")
+    # print("resp", txt)
+    if isinstance(txt, list):
+        return txt[0]
+    if isinstance(txt, str):
+        return txt
+    raise ValueError(f"Unexpected /generate response: {data!r}")
+
+import re
+
+
+def reformat_trace(s: str) -> str:
+    """Turn ChatML-ish agent transcript into readable plain text."""
+    if not s:
+        return s
+    t = s
+    # Remove system prompt block completely (from <|im_start|>system to <|im_end|>)
+    t = re.sub(r"<\|im_start\|>system.*?<\|im_end\|>", "", t, flags=re.DOTALL|re.IGNORECASE)
+    
+    # Replace other speaker tokens with readable labels
+    def _speaker(m: re.Match) -> str:
+        role = (m.group(1) or "").strip().upper()
+        return f"\n{role}:\n"
+    t = re.sub(r"<\|im_start\|>(\w+)", _speaker, t, flags=re.IGNORECASE)
+    t = re.sub(r"<\|im_end\|>", "\n", t, flags=re.IGNORECASE)
+    
+    # Remove <think> tags and replace closing with newline
+    t = re.sub(r"<think\s*>", "", t, flags=re.IGNORECASE)
+    t = re.sub(r"</think\s*>", "\n", t, flags=re.IGNORECASE)
+    
+    # Replace tool response tags with a clear marker
+    t = re.sub(r"<tool_respon[sc]e\s*>", "SEARCH RESULT\n", t, flags=re.IGNORECASE)
+    t = re.sub(r"</tool_respon[sc]e\s*>", "\n", t, flags=re.IGNORECASE)
+    
+    # Remove tool_call tags completely
+    t = re.sub(r"</?tool_call\s*>", "", t, flags=re.IGNORECASE)
+    
+    # Remove any other ChatML tokens (like <|im_start|> and others)
+    t = re.sub(r"<\|[^>]+?\|>", "", t)
+    
+    # Remove any other remaining angle bracket tags (e.g., <something>)
+    t = re.sub(r"</?[^>\n]+?>", "", t)
+    
+    # Clean up multiple blank lines to max two
+    t = re.sub(r"\n{3,}", "\n\n", t).strip()
+    
+    return t
+
+
+
+def _route_and_summarize(
+    summary_llm: str,
+    system_prompt: str,
+    prompt: str,
+    *,
+    temperature: float,
+    max_tokens: int,
+) -> str:
+    """
+    If `summary_llm` starts with 'http', treat as vLLM base_url; else treat as an OpenAI model id.
+    For vLLM, prepend [SYSTEM]/[USER] tags; for OpenAI, pass messages with system+user.
+    """
+    if summary_llm.strip().lower().startswith("http"):
+        return _call_sglang(summary_llm, system_prompt, prompt, temperature=temperature, max_tokens=max_tokens)
+
+    client = _openai_client()
+    rsp = client.chat.completions.create(
+        model=summary_llm,
+        temperature=temperature,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user",   "content": prompt},
         ],
-    ),
-    "fathom": (
-        "from search_api import search_urls, query_url",
-        [
-            {
-                "name": "search_urls",
-                "description": "Google search and return links to web-pages with a brief snippet given a text query",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "query": {"type": "string"},
-                        "top_k": {"type": "integer", "default": 10},
-                    },
-                    "required": ["query"],
-                },
-            },
-            {
-                "name": "query_url",
-                "description": "Visit webpage and return evidence based retrieval for the provided goal",
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "url": {"type": "string"},
-                        "goal": {"type": "string"},
-                    },
-                    "required": ["url", "goal"],
-                },
-            },
-        ],
-    ),
-}
+        max_tokens=max_tokens,
+    )
+    return rsp.choices[0].message.content or ""
 
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Pretty printing
-# ──────────────────────────────────────────────────────────────────────────────
 
-@dataclass
-class ViewConfig:
-    use_rich: bool = True
-    transcript_max_chars: int = 8000  # clamp transcript in view
-
-def print_report(
-    question: str,
-    agent_kind: str,
-    model_url: Optional[str],
-    executors: List[str],
-    preset: str,
-    extracted_answer: str,
-    transcript: str,
-    tool_calls: Any,
-    tokenizer_info: Optional[str],
-    view: ViewConfig,
-) -> None:
-    use_rich = view.use_rich and HAVE_RICH
-    if use_rich:
-        console = Console()
-        console.print(Rule("[bold]DeepSearch • Single-Question Runner[/bold]"))
-        meta = Table(show_header=False, box=None, expand=True, padding=(0,1))
-        meta.add_row("Agent", f"[bold]{agent_kind}[/bold]")
-        meta.add_row("Model URL", model_url or "—")
-        if executors:
-            meta.add_row("Executors", ", ".join(executors))
-        if agent_kind in {"fathom-search", "ii-search", "jan-nano"}:
-            meta.add_row("ReCall Preset", preset)
-        if tokenizer_info:
-            meta.add_row("Tokenizer", tokenizer_info)
-        console.print(Panel(meta, title="Configuration", expand=True))
-
-        console.print(Panel(Text(question), title="Question", expand=True))
-        console.print(Panel(Text(extracted_answer or "—"), title="Final Answer (extracted)", expand=True))
-
-        # Tool calls summary (best-effort)
-        if tool_calls is not None:
-            summary = str(tool_calls)
-            if len(summary) > 2000:
-                summary = summary[:2000] + " ... [truncated]"
-            console.print(Panel(Text(summary), title="Tool Calls (summary)", expand=True))
-
-        # Transcript
-        view_text = transcript or ""
-        if len(view_text) > view.transcript_max_chars:
-            view_text = view_text[:view.transcript_max_chars] + "\n...[truncated]"
-        try:
-            console.print(Panel(Syntax(view_text, "text", word_wrap=True), title="Transcript", expand=True))
-        except Exception:
-            console.print(Panel(Text(view_text), title="Transcript", expand=True))
-        console.print(Rule())
-    else:
-        # Plain stdout
-        print("=" * 78)
-        print("DeepSearch • Single-Question Runner")
-        print("=" * 78)
-        print(f"Agent        : {agent_kind}")
-        print(f"Model URL    : {model_url or '-'}")
-        if executors:
-            print(f"Executors    : {', '.join(executors)}")
-        if agent_kind in {"fathom-search", "ii-search", "jan-nano"}:
-            print(f"ReCall Preset: {preset}")
-        if tokenizer_info:
-            print(f"Tokenizer    : {tokenizer_info}")
-        print("-" * 78)
-        print("Question:")
-        print(question)
-        print("-" * 78)
-        print("Final Answer (extracted):")
-        print(extracted_answer or "—")
-        print("-" * 78)
-        if tool_calls is not None:
-            summary = str(tool_calls)
-            if len(summary) > 2000:
-                summary = summary[:2000] + " ... [truncated]"
-            print("Tool Calls (summary):")
-            print(summary)
-            print("-" * 78)
-        view_text = transcript or ""
-        if len(view_text) > view.transcript_max_chars:
-            view_text = view_text[:view.transcript_max_chars] + "\n...[truncated]"
-        print("Transcript:")
-        print(view_text)
-        print("=" * 78)
+def build_summary_prompt(question: str, transcript: str, tool_calls: Any) -> str:
+    """Assemble the user prompt handed to the summary model."""
+    try:
+        tool_str = json.dumps(tool_calls, ensure_ascii=False)
+    except Exception:
+        tool_str = str(tool_calls)
+    return (
+        "You are given a DeepSearch investigation trace.\n\n"
+        f"Question:\n{question}\n\n"
+        "Trace (model transcript):\n"
+        f"{transcript}\n\n"
+        "Tool Calls (as-recorded):\n"
+        f"{tool_str}\n\n"
+        "— End of trace —"
+    )
 
 
-# ──────────────────────────────────────────────────────────────────────────────
+
+# ──────────────────────────────────────────────────────────────
 # Main
-# ──────────────────────────────────────────────────────────────────────────────
+# ──────────────────────────────────────────────────────────────
 
 def main():
-    parser = argparse.ArgumentParser(description="Ask a single question with a chosen DeepSearch agent.")
-    parser.add_argument("--agent", required=True, choices=[
-        "fathom-search", "ii-search", "jan-nano", "zerosearch", "r1-searcher", "search-o1"
-    ])
+    parser = argparse.ArgumentParser(description="Ask a single question with Fathom-Search-4B.")
     parser.add_argument("--question", help="Question to ask (if absent, will prompt interactively).")
-    parser.add_argument("--model-url", help="Model server URL (used by many agents).")
-    parser.add_argument("--executors", default="", help="Comma-separated ReCall executor URLs (for ReCall-based agents).")
-    parser.add_argument("--tokenizer", default=None, help="Optional HF tokenizer/base ckpt path to pass to the agent.")
-    parser.add_argument("--search-preset", choices=list(RECALL_PRESETS.keys()), default="fathom",
-                        help="ReCall tool preset for fathom/ii/jan agents.")
+    parser.add_argument("--model-url", required=True, help="Model server URL.")
+    parser.add_argument("--executors", required=True, help="Comma-separated ReCall executor URLs.")
+    parser.add_argument("--tokenizer", default=None, help="Optional HF tokenizer/base ckpt path.")
     parser.add_argument("--temperature", type=float, default=0.6)
     parser.add_argument("--max-new-tokens", type=int, default=40960)
     parser.add_argument("--no-color", action="store_true", help="Force plain output (no Rich).")
+    # Upgrades
+    parser.add_argument("--deepresearch", action="store_true",
+                        help="If set, produce a DeepResearch-style report with the Summary LLM.")
+    parser.add_argument("--summary-llm", default="gpt-4.1-mini",
+                        help="Summary LLM backend: OpenAI model (e.g., gpt-4.1-mini) "
+                             "or vLLM base URL (e.g., http://0.0.0.0:1255). Defaults to $SUMMARY_LLM or gpt-4.1-mini.")
+    parser.add_argument("--summary-temperature", type=float, default=0.4)
+    parser.add_argument("--summary-max-tokens", type=int, default=10000)
 
     args = parser.parse_args()
+    # python inference2.py \
+    # --question "Fractal Analytics that recently registered for IPO analyze if  I should subscribe to it? based on the fact that its a service company and AI is threatning to wipe out the industry of IT services?" \
+    # --executors http://0.0.0.0:1210 \
+    # --model-url http://0.0.0.0:1253 \
+    # --tokenizer /data/home/fractal/shreyas/models/Qwen3-4B \
+    # --summary-llm "gpt-4.1-mini" \
+    # --deepresearch 
 
-    question = args.question.strip() if args.question else ""
+
+    question = (args.question or "").strip()
     if not question:
         try:
             question = input("Enter your question: ").strip()
@@ -439,56 +361,62 @@ def main():
         print("No question provided.", file=sys.stderr)
         sys.exit(2)
 
-    executors = [u.strip() for u in (args.executors or "").split(",") if u.strip()]
-    agent = build_agent(args.agent, args.model_url, executors)
+    executors = [u.strip() for u in args.executors.split(",") if u.strip()]
+    agent = FathomSearchAdapter(executor_urls=executors)
 
-    # Tokenizer (optional)
     tok = None
     tok_info = None
     if args.tokenizer:
-        tok = load_tokenizer(args.tokenizer)
+        if AutoTokenizer is None:
+            raise RuntimeError("transformers not installed; `pip install transformers`")
+        tok = AutoTokenizer.from_pretrained(args.tokenizer, trust_remote_code=True)
         tok_info = args.tokenizer
 
-    # Build ReCall env/schemas if needed
-    recall_env, recall_schemas = RECALL_PRESETS.get(args.search_preset, RECALL_PRESETS["fathom"])
-
-    # Dispatch per agent family
-    if args.agent in {"fathom-search", "ii-search", "jan-nano"}:
-        transcript, tool_calls = agent.run(
-            env=recall_env,
-            func_schemas=recall_schemas,
-            question=question,
-            model_url=args.model_url,
-            temperature=args.temperature,
-            max_new_tokens=args.max_new_tokens,
-            tokenizer=tok,
-        )
-        # Boxed extraction is the default for these families
-        extracted = extract_answer_boxed(transcript or "")
-    elif args.agent in {"r1-searcher", "zerosearch"}:
-        transcript, tool_calls = agent.run(question=question, tokenizer=tok)
-        extracted = extract_answer_tagged(transcript or "")
-    else:  # search-o1
-        transcript, tool_calls = agent.run(question=question, tokenizer=tok)
-        # Many o1-style configs also use <answer> tags; fall back to boxed if none.
-        extracted = extract_answer_tagged(transcript or "")
-        if not extracted or extracted == normalize((transcript or "")[-200:]):
-            extracted = extract_answer_boxed(transcript or "")
-
-    view = ViewConfig(use_rich=not args.no_color)
-    print_report(
+    # Run Fathom-Search
+    transcript, tool_calls = agent.run(
+        env=RECALL_ENV,
+        func_schemas=RECALL_SCHEMAS,
         question=question,
-        agent_kind=args.agent,
         model_url=args.model_url,
-        executors=executors,
-        preset=args.search_preset,
-        extracted_answer=extracted,
-        transcript=transcript or "",
-        tool_calls=tool_calls,
-        tokenizer_info=tok_info,
-        view=view,
+        temperature=args.temperature,
+        max_new_tokens=args.max_new_tokens,
+        tokenizer=tok,
     )
+
+    extracted = extract_answer_boxed(transcript or "")
+
+    # Optional: Summary/DeepResearch pass
+    summary_text: Optional[str] = None
+    # try:
+
+    prompt = build_summary_prompt(question, reformat_trace(transcript) or "", tool_calls)
+    if args.deepresearch:
+        print("Generating Report ........")
+        system_prompt = DEEPRESEARCH_REPORT_SYS_PROMPT 
+        try:
+            resp = _route_and_summarize(
+                summary_llm=args.summary_llm,
+                system_prompt=system_prompt,
+                prompt=prompt,
+                temperature=args.summary_temperature,
+                max_tokens=args.summary_max_tokens,
+                )
+            
+            report = re.split(r"</think\s*>", resp, flags=re.IGNORECASE)[-1]
+            plan = re.split(r"</think\s*>", resp, flags=re.IGNORECASE)[0]  
+
+        except Exception as e:
+            report = f"[Summary LLM error: {e}]"
+            plan = f"[Summary LLM error: {e}]"
+        print("="*75)
+        print("REPORT")
+        print(report)
+      
 
 
 if __name__ == "__main__":
     main()
+
+
+
+
