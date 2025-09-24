@@ -1,0 +1,14 @@
+accelerate
+anthropic
+crawl4ai
+deepspeed
+fastapi
+pandas
+playwright
+sentencepiece
+sglang
+tenacity
+tf-playwright-stealth
+tiktoken
+torch-memory-saver
+wikipedia
