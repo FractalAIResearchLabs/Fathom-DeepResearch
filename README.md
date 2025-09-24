@@ -129,7 +129,7 @@ Set the following in `scripts/.env`:
 Launch on **port 8901** with 16 workers:
 
 ```bash
-serving/host_serper.sh 8901 16
+serving/host_serper.sh 8901 16 "openai"gpt-4.1-mini"
 ```
 
 ### 3) Start the Model Servers (SGLang)
@@ -177,7 +177,7 @@ Run **Fathom‑Search** via `inference.py`:
 
 ```bash
  python inference.py \
-    --question "Do 1 search_urls call and 1 query_url call to find out the Date of Birth of Adolf Hitler?" \
+    --question "Find out the nmes of all the companies that have been selected under the IndiaAI mission? Write a detailed report on what their deliverables are? What are the ways in which this mission will impact india in the coming decade?" \
     --executors http://0.0.0.0:8901 \
     --model-url http://0.0.0.0:8902 \
     --tokenizer FractalAIResearch/Fathom-Search-4B \
