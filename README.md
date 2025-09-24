@@ -116,23 +116,7 @@ uv pip install flash-attn==2.8.2 --no-build-isolation --no-cache
 playwright install
 ```
 
-### 2) Start the Tool Server (Serper+Jina)
-
-Set the following in `scripts/.env`:
-
-- **SERPER_API_KEY** (get from serper.dev; ~2,500 free queries without any card) (necessary for live web-search)
-- **JINA_API_KEY** (optional) — used in the web-page extraction pipeline (recommended for replicatiion)
-- **OPENAI_API_KEY** (optional) — for goal conditioned querying of web-pages using GPT-4.1-mini (recommended for replicatiion)
-- **SERPER_CACHE_DIR**  — path to caching the search results from serper.dev to save cost and retrival time 
-- **JINA_CACHE_DIR**  — path to caching the search results from jina.ai to save cost and retrival time 
-
-Launch on **port 8901** with 16 workers:
-
-```bash
-serving/host_serper.sh 8901 16 "openai"gpt-4.1-mini"
-```
-
-### 3) Start the Model Servers (SGLang)
+### 2) Start the Model Servers (SGLang)
 Change `--model-path` to your model identifier or local path (e.g., `FractalAIResearch/Fathom-Search-4B` or `model_path`).
 #### Fathom-Search-4B
 Default port below for is **8902** .
@@ -169,6 +153,25 @@ python3 -m sglang.launch_server \
          --disable-cuda-graph \
          --context-length 131092 \
          --json-model-override-args '{"rope_type":"yarn","factor":2.0,"original_max_position_embeddings":40960}'
+```
+
+### 3) Start the Tool Server (Serper+Jina)
+
+Set the following in `scripts/.env`:
+
+- **SERPER_API_KEY** (get from serper.dev; ~2,500 free queries without any card) (necessary for live web-search)
+- **JINA_API_KEY** (optional) — used in the web-page extraction pipeline (recommended for replicatiion)
+- **OPENAI_API_KEY** (optional) — for goal conditioned querying of web-pages using GPT-4.1-mini (recommended for replicatiion)
+- **SERPER_CACHE_DIR**  — path to caching the search results from serper.dev to save cost and retrival time 
+- **JINA_CACHE_DIR**  — path to caching the search results from jina.ai to save cost and retrival time 
+
+(Recommended) Launch on **port 8901** with 256 workers with the **gpt-4.1-mini** as the search backend for querying web-pages:
+```bash
+serving/host_serper.sh 8901 256 "openai:gpt-4.1-mini"
+```
+(Optionally) Launch search backend with a **locally hosted LLM of choice** at port XXXX and pass it as search backed (See step 2)
+```bash
+serving/host_serper.sh 8901 256 http://0.0.0.0:XXXX""
 ```
 
 ### 4) Single‑question inference
