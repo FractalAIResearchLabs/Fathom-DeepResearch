@@ -171,7 +171,7 @@ serving/host_serper.sh 8901 256 "openai:gpt-4.1-mini"
 ```
 (Optionally) Launch search backend with a **locally hosted LLM of choice** at port XXXX and pass it as search backed (See step 2)
 ```bash
-serving/host_serper.sh 8901 256 http://0.0.0.0:XXXX""
+serving/host_serper.sh 8901 256 "http://0.0.0.0:XXXX"
 ```
 
 ### 4) Single‑question inference
