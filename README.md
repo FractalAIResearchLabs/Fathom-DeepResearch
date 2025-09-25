@@ -5,6 +5,7 @@
 [![dataset](https://img.shields.io/badge/HFData-Fathom--Search--Data-green?logo=huggingface&style=for-the-badge)](https://huggingface.co/collections/FractalAIResearch/Fathom-Search-datasets-681b42fe6f20d4b11fc51d79)
 [![space](https://img.shields.io/badge/HFSpace-🚀_Chat_with_Fathom_Search-red?logo=huggingface&style=for-the-badge)](https://huggingface.co/spaces/FractalAIResearch/Fathom-Search-4B)
 [![space](https://img.shields.io/badge/HFModel-Fathom--Search--4B-red?logo=huggingface&style=for-the-badge)](https://huggingface.co/FractalAIResearch/Fathom-Search-4B)
+[![space](https://img.shields.io/badge/HFModel-Fathom--Search--4B-red?logo=huggingface&style=for-the-badge)](https://huggingface.co/FractalAIResearch/Fathom-Synthesizer-4B)
 
 </div>
 
