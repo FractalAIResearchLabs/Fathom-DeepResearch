@@ -3,7 +3,7 @@
 <div align="center">
   
 [![dataset](https://img.shields.io/badge/HFData-DuetQA-green?logo=huggingface&style=for-the-badge)](https://huggingface.co/datasets/FractalAIResearch/DuetQA/)
-[![dataset](https://img.shields.io/badge/HFData---DeepResearch-SFT-green?logo=huggingface&style=for-the-badge)](https://huggingface.co/datasets/FractalAIResearch/DeepResearch-SFT/)
+[![dataset](https://img.shields.io/badge/HFData-DeepResearch-SFT-green?logo=huggingface&style=for-the-badge)](https://huggingface.co/datasets/FractalAIResearch/DeepResearch-SFT/)
 [![space](https://img.shields.io/badge/HFSpace-🚀_Chat_with_Fathom_Search-red?logo=huggingface&style=for-the-badge)](https://huggingface.co/spaces/FractalAIResearch/Fathom-Search-4B)
 [![space](https://img.shields.io/badge/HFModel-Fathom--Search--4B-red?logo=huggingface&style=for-the-badge)](https://huggingface.co/FractalAIResearch/Fathom-Search-4B)
 [![space](https://img.shields.io/badge/HFModel-Fathom--Synthesizer--4B-red?logo=huggingface&style=for-the-badge)](https://huggingface.co/FractalAIResearch/Fathom-Synthesizer-4B)
