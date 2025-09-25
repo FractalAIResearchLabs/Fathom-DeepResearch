@@ -36,7 +36,8 @@ nohup python3 -m sglang.launch_server \
   --disable-cuda-graph \
   --context-length "${CTX}" \
   > "${REPO_ROOT}/logs/sglang_${SERVED_NAME}_${MODEL_PORT}.log" 2>&1 < /dev/null &
-sleep 5
+echo "Loading ZeroSearch model ..."
+sleep 120
 wait_http "http://0.0.0.0:${MODEL_PORT}/health" || true
 
 set_pythonpath_eval
