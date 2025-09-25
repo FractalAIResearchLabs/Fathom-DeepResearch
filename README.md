@@ -109,10 +109,9 @@ This section shows how to host the **tool web‑server** and the **SGLang model 
 ### 1) Environment setup
 
 ```bash
-uv venv fathom_search --python=3.10
-source fathom_search/bin/activate
-uv pip install -r requirements.txt
-uv pip install flash-attn==2.8.2 --no-build-isolation --no-cache
+uv pip install torch==2.7.1 torchvision==0.22.1 torchaudio==2.7.1 --index-url https://download.pytorch.org/whl/cu126
+uv pip install --no-build-isolation -r requirements.txt
+playwright install-deps
 playwright install
 ```
 
