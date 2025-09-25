@@ -23,6 +23,8 @@
 - ⚡ **RAPO: Reward Aware Policy Optimization.**  
   We introduce a zero-overhead modification of GRPO with *dataset pruning , advantage scaling , replay buffers , and a steerable step-level reward 🎚* that stabilizes multi-turn RL and enables long-horizon tool use .
 
+## ✨ Key Contributions
+
 - 🎭 **DuetQA.**  
   We release a 5K-sample dataset 📚 created through our novel *multi-agent self-play pipeline *, containing verifiable question–answer pairs that are impossible to answer without *live web search* , for DeepSearch model training.
 
