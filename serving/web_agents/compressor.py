@@ -432,7 +432,7 @@ def query_text(
         try:
             if _is_openai_model(model):
                 print("=" * 100)
-                print(f"using openai backend for querying {url} with the goal '{goal}'")
+                print(f"using openai backend for q'uerying {url} with the goal '{goal}'")
                 print("=" * 100)
                 rsp_text = _call_openai(
                     model, prompt,
