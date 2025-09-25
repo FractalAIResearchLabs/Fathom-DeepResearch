@@ -105,8 +105,8 @@ python3 -m sglang.launch_server \
 Set the following in `scripts/.env`:
 
 - **SERPER_API_KEY** (get from serper.dev; ~2,500 free queries without any card) (necessary for live web-search)
-- **JINA_API_KEY** (optional) — used in the web-page extraction pipeline (recommended for replicatiion)
-- **OPENAI_API_KEY** (optional) — for goal conditioned querying of web-pages using GPT-4.1-mini (recommended for replicatiion)
+- **JINA_API_KEY** (optional) — used in the web-page extraction pipeline (recommended for replicaiion)
+- **OPENAI_API_KEY** (optional) — for goal conditioned querying of web-pages using GPT-4.1-mini (recommended for replication)
 - **SERPER_CACHE_DIR**  — path to caching the search results from serper.dev to save cost and retrival time 
 - **JINA_CACHE_DIR**  — path to caching the search results from jina.ai to save cost and retrival time 
 
