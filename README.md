@@ -24,6 +24,10 @@ However, scaling DeepSearch capability faces three key challenges:
 - algorithmic instability in multi-turn reinforcement learning (RL) with tools
 - lazy tool calling behavior which hinders scaling deep information exploration and retrieval capabilities
 
+## ✨ Key Highlights
+
+To this end, we introduce a post-training recipe to create state-of-the-art DeepSearch enabled reasoning model, Fathom-Search-4B. We enlist our key contributions below:
+
 - 🧭 **RL Zero framework for DeepSearch training.**  
   We present a novel two-stage RL-Zero framework that helps *steer cognitive behaviors* 🧠 developed by the policy model, such as exploration 🧭 and verification ✅ during training.
 
@@ -36,6 +40,10 @@ However, scaling DeepSearch capability faces three key challenges:
 - 📝 **DeepResearch-SFT.**  
   A synthetic SFT corpus 🧾 for converting downstream search/investigation traces 🔍 of DeepSearch-enabled models into DeepResearch reports 📑 via an explicit *plan-then-write* protocol ✍️.
 
+- 🏆 **Fathom-Search-4B** & **Fathom-Synthesizer-4B**
+  SOTA 4B-parameter model trained to browse, extract, verify and reason over live web content acheiving SOTA Deep search benchmarks. 
+  4B-parameter model to summarize the Fathom-Search-4B outputs on deep research questions
+
 
 ---
 
@@ -45,62 +53,13 @@ However, scaling DeepSearch capability faces three key challenges:
 
 **Fathom‑Search-4B** sets a new state of the art on DeepSearch benchmarks outperforming all prior open source baselines. Our model reaches average of 52.1% on DeepSearch and 53.8% on General Reasoning benchmarks—improvements of +24.6 pp and +4.0 pp over Qwen3-4B + Search. On harder benchmarks such as FRAMES and WebWalkerQA we observe ≥100% relative gains, and > 3× on Seal0. It also exceeds prior SOTA II-Search-4B and surpasses larger Qwen2.5-7B based systems such as ZeroSearch-7B and R1-Searcher-7B
 
-<!--We evaluate Fathom‑Search-4B and compare with several baseline models across 9 challenging benchmarks-->
-
-<!--
-Model	| SimpleQA	| FRAMES	| WebWalker	| Seal0	| Musique	| Avg
---- | ---	| ---	| ---	| ---	| ---	| ---
-**_Closed-Source Models_**	| ---	| ---	| ---	| ---	| ---	| ---
-GPT-4o (without search)	| 34.7	| 52.4	| 3.2	| 7.2	| 34.0	| 26.3
-o3 (without search)	| 49.4	| 43.2	| 14.0	| 14.0	| _48.9_	| 33.9
-GPT-4o (with search)	| _84.4_	| _63.7_	| _31.6_	| _15.3_	| 37.5	| _46.5_
-o3 (with search)	| **96.0**	| **86.8**	| **57.0**	| **49.5**	| **51.2**	| **68.1**
-| | | | | | |
-**_Open-Source Models_**	| ---	| ---	| ---	| ---	| ---	| ---
-Qwen-2.5-7B	| 3.96	| 16.5	| 2.1	| 1.4	| 6.2	| 6.0
-Qwen-2.5-7B + Search	| 50.8	| 23.3	| 10.1	| 3.0	| 13.6	| 20.2
-Qwen3-4B	| 3.8	| 14.7	| 2.6	| 2.1	| 9.0	| 6.4
-Qwen3-4B + Search	| 67.7	| 27.2	| 17.5	| 6.2	| 18.7	| 27.5
-ZeroSearch-3B	| 51.9	| 11.3	| 8.7	| 7.1	| 13.8	| 18.6
-ZeroSearch-7B	| 75.3	| 30.0	| 18.2	| 6.2	| 20.6	| 30.1
-R1-Searcher-7B	| 58.8	| 37.0	| 1.8	| 1.4	| 19.1	| 23.6
-search-o1 (Qwen3-4B)	| 57.5	| 26.8	| 10.8	| 5.5	| 15.3	| 23.2
-WebSailor-3B	| 87.1	| 44.4	| **52.2**	| 9.0	| 27.4	| 44.0
-Jan-Nano-32K	| 80.7	| 36.1	| 25.0	| 6.2	| 21.4	| 33.9
-Jan-Nano-128K	| 83.2	| 43.4	| 33.7	| 6.2	| 23.9	| 38.1
-II-Search-4B	| _88.2_	| _58.7_	| 40.8	| 17.1	| _31.8_	| _47.3_
-Fathom-Search-4B (Stage-1)	| 88.1	| 57.2	| 39.0	| 19.8	| 31.3	| 47.1
-**Fathom-Search-4B (Stage-2**)	| **90.0**	| **64.8**	| _50.0_	| **22.5**	| **33.2**	| **52.1**
-## Results
-
-Model	| HLE	| AIME-25	| GPQA-D	| MedQA	| Avg
---- | ---	| ---	| ---	| ---	| ---
-Closed-Source Models	| ---	| ---	| ---	| ---	| ---
-GPT-4o (without search)	| 2.3	| 71.0	| 53.0	| 88.2	| 53.6
-o3 (without search)	| 20.3	| **88.9**	| **85.4**	| 95.4	| _72.5_
-GPT-4o (with search)	| 4.3	| _71.0_	| _53.0_	| _88.2_	| 54.1
-o3 (with search)	| **27.4**	| **88.9**	| **85.4**	| **95.4**	| **74.3**
-Open-Source Models	| ---	| ---	| ---	| ---	| ---
-Qwen-2.5-7B	| 1.2	| 10	| 33.0	| 61.2	| 24.7
-Qwen-2.5-7B + Search	| 2.4	| 10	| 33.5	| 62.0	| 25.3
-Qwen3-4B	| 4.2	| _65.0_	| 55.1	| 71.0	| 48.8
-Qwen3-4B + Search	| 6.2	| _65.0_	| 55.9	| 72.0	| 49.8
-ZeroSearch-3B	| 3.4	| 10.0	| 14.6	| 51.0	| 17.3
-ZeroSearch-7B	| 4.2	| 10.0	| 29.3	| 57.5	| 22.8
-R1-Searcher-7B	| 2.1	| 10.0	| 33.3	| 56.5	| 25.5
-search-o1 (Qwen3-4B)	| 3.4	| 40.0	| 30.5	| 53.7	| 31.9
-WebSailor-3B	| 7.4	| 40.0	| 45.5	| 51.3	| 36.0
-Jan-Nano-32K	| 5.5	| 60.0	| 37.4	| 66.0	| 42.2
-Jan-Nano-128K	| 6.1	| 53.3	| 51.0	| 65.4	| 44.0
-II-Search-4B	| _7.4_	| 60.0	| _51.5_	| _72.1_	| 47.8
-Fathom-Search-4B (Stage-1)	| 6.7	| 60.0	| 55.6	| **75.4**	| _49.4_
-**Fathom-Search-4B (Stage-2)**	| **9.5**	| **70.0**	| **60.1**	| **75.4**	| 53.8
--->
-
 **Generalization across domains**.
 Unlike most models that drop on out-of-distribution tasks, Fathom-Search-4B generalizes well. On GPQA-D and MedQA, Fathom-Search (Stage-2) achieves 60.1% and 75.4%, surpassing WebSailor-3B and ZeroSearch-3B by +23–25 pp, despite no domain-specific finetuning.
 
 Competing with closed-source models, Fathom-Search (Stage-2) outperforms GPT-4o + Search on SimpleQA, FRAMES, WebWalkerQA, HLE, and GPQA-D. It is +18.4 pp on WebWalkerQA and +7.0 pp on both Seal0 and GPQA-D, and attains ∼2× the accuracy of GPT-4o + Search accuracy on the hard general-reasoning benchmark HLE
+
+<p align="center"> <img src="./assets/deepsearchbench.png" style="width: 100%;" id="deepsearchbench-img">       </p>
+
 
 ## 🚀 Inference
 
