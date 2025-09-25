@@ -1,4 +1,4 @@
-# 🧮 Fathom-Search: Unlocking Long-Horizon DeepSearch
+# 🧮 Fathom-DeepResearch: Unlocking Long Horizon Information Retrieval And Synthesis For SLMs
 
 <div align="center">
   
@@ -13,15 +13,7 @@
 ---
 ## Introduction
 
-Large Language Models (LLMs) have demonstrated promising results across a diverse set of tasks such as mathematical reasoning, code generation, Despite these advancements, they remain prone to factual inaccuracies/hallucinations as they rely on static internal knowledge acquired during pretraining. Real world information is continually evolving and getting updated. Given the high cost of pretraining LLMs, it is not pragmatic to rely solely on repeated pretraining to update their knowledge. A potential solution to this problem involves enabling LLMs to interface with external knowledge systems.
 
-Retrieval-augmented generation (RAG) has become the standard framework for open-domain QA, where LLMs generate answers conditioned on retrieved context. However, these pipelines rely on structured, static corpora and predictable input formats conditions rarely met in real-world search tasks. In contrast, recent efforts have focused on instilling tool-mediated DeepSearch reasoning capabilities in LLMs that involve free-form web queries, parsing heterogeneous/noisy outputs, and synthesizing multi-step reasoning chains. The core principle underlying this approach is to concentrate training efforts on developing the model's ability to autonomously and effectively access and leverage external information sources (search engines). Rather than directly incorporating factual content into the model parameters, this method emphasizes teaching the model how to navigate, comprehend, and utilize relevant information from vast digital information landscapes for complex-information seeking tasks. This distinction makes DeepSearch fundamentally more difficult than traditional RAG and a necessary precursor to the next scaling milestone in search augmented language model capabilities: _DeepResearch Agents_
-
-However, scaling DeepSearch capability faces three key challenges:
-
-- the lack of high-quality, verifiable, scalable training dataset creation pipeline
-- algorithmic instability in multi-turn reinforcement learning (RL) with tools
-- lazy tool calling behavior which hinders scaling deep information exploration and retrieval capabilities
 
 ## ✨ Key Highlights
 
