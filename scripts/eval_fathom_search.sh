@@ -232,7 +232,7 @@ python3 "${REPO_ROOT}/eval_search.py" \
   --search-preset fathom \
   --judge-model "${JUDGE_MODEL}" \
   --resume \
-  --name "stage3-sft"
+  --name "Fathom-Search-4B"
 
 
 
