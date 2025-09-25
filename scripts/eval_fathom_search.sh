@@ -179,7 +179,8 @@ if [[ -e "${QUERY_LLM}" ]]; then
     --enable-metrics \
     > "${QUERY_LOG}" 2>&1 < /dev/null &
 
-  sleep 5
+  echo "Loading Query-LLM"
+  sleep 120
   wait_http "http://0.0.0.0:${QUERY_PORT}/health" || true
 
   # Tools will detect non-gpt-* and call as a vLLM base URL
@@ -213,8 +214,8 @@ CUDA_VISIBLE_DEVICES="${MAIN_GPUS}" nohup python3 -m sglang.launch_server \
   --json-model-override-args "${JSON_OVERRIDE}" \
   > "${MODEL_LOG}" 2>&1 < /dev/null &
 
-sleep 5
-
+echo "Loading Fathom-Search-4B"
+sleep 120
 
 # ───────────────────────────────────────────────────────────────────────────────
 # 3) Run evaluation
@@ -234,25 +235,7 @@ python3 "${REPO_ROOT}/eval_search.py" \
   --name "stage3-sft"
 
 
-# OpenAI extractor on CPU (no extra GPU) + main model on GPUs 0,1
-# scripts/eval_fathom_search.sh \
-#   --model-path /data/models/Fathom-Search-4B \
-#   --model-port 1255 \
-#   --executors 1211,1212 \
-#   --dataset GPQA-Diamond \
-#   --main-gpus 0,1 \
-#   --query-llm gpt-4.1-mini
 
-# # Local Qwen as extractor on GPU 2, main model on GPUs 0,1
-# scripts/eval_fathom_search.sh \
-#   --model-path /data/home/fractal/shreyas/models/models/stage-3-12-rapo \
-#   --model-port 1255 \
-#   --executors 1211,1212 \
-#   --dataset GPQA-Diamond \
-#   --main-gpus 0,1 \
-#   --query-llm /data/home/fractal/shreyas/models/Qwen3-4B \
-#   --query-port 1260 \
-#   --query-gpus 2,3
 
 
 
