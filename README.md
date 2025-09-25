@@ -17,8 +17,6 @@
 
 ## ✨ Key Innovations
 
-To this end, we introduce a post-training recipe to create state-of-the-art DeepSearch enabled reasoning model, Fathom-Search-4B. We enlist our key contributions below:
-
 - 🧭 **RL Zero framework for DeepSearch training.**  
   We present a novel two-stage RL-Zero framework that helps *steer cognitive behaviors*  developed by the policy model, such as exploration and verification during training.
 
