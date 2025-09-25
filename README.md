@@ -10,12 +10,11 @@
 
 </div>
 
-<p align="center"> <img src="./images/image.png" style="width: 100%;" id="title-icon">       </p>
 
 ---
 ## Introduction
 
-<p align="center"> <img src="./assets/main" style="width: 100%;" id="benchmark-img">       </p>
+<p align="center"> <img src="./assets/main.png" style="width: 100%;" id="benchmark-img">       </p>
 
 
 
