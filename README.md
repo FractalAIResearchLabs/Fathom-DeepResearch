@@ -15,21 +15,21 @@
 
 
 
-## ✨ Key Highlights
+## ✨ Key Innovations
 
 To this end, we introduce a post-training recipe to create state-of-the-art DeepSearch enabled reasoning model, Fathom-Search-4B. We enlist our key contributions below:
 
 - 🧭 **RL Zero framework for DeepSearch training.**  
-  We present a novel two-stage RL-Zero framework that helps *steer cognitive behaviors* 🧠 developed by the policy model, such as exploration 🧭 and verification ✅ during training.
+  We present a novel two-stage RL-Zero framework that helps *steer cognitive behaviors*  developed by the policy model, such as exploration and verification during training.
 
 - ⚡ **RAPO: Reward Aware Policy Optimization.**  
-  We introduce a zero-overhead modification of GRPO with *dataset pruning ✂️, advantage scaling 📈, replay buffers 🔁, and a steerable step-level reward 🎚* that stabilizes multi-turn RL and enables long-horizon tool use ⏳.
+  We introduce a zero-overhead modification of GRPO with *dataset pruning , advantage scaling , replay buffers , and a steerable step-level reward 🎚* that stabilizes multi-turn RL and enables long-horizon tool use .
 
 - 🎭 **DuetQA.**  
-  We release a 5K-sample dataset 📚 created through our novel *multi-agent self-play pipeline 🎮🤝*, containing verifiable question–answer pairs that are impossible to answer without *live web search* 🌍, for DeepSearch model training.
+  We release a 5K-sample dataset 📚 created through our novel *multi-agent self-play pipeline *, containing verifiable question–answer pairs that are impossible to answer without *live web search* , for DeepSearch model training.
 
 - 📝 **DeepResearch-SFT.**  
-  A synthetic SFT corpus 🧾 for converting downstream search/investigation traces 🔍 of DeepSearch-enabled models into DeepResearch reports 📑 via an explicit *plan-then-write* protocol ✍️.
+  A synthetic SFT corpus for converting downstream search/investigation traces of DeepSearch-enabled models into DeepResearch reports via an explicit *plan-then-write* protocol.
 
 - 🏆 **Fathom-Search-4B** & **Fathom-Synthesizer-4B**
   SOTA 4B-parameter model trained to browse, extract, verify and reason over live web content acheiving SOTA Deep search benchmarks. 
@@ -41,13 +41,7 @@ To this end, we introduce a post-training recipe to create state-of-the-art Deep
 ## 📊 Key Results
 
 <p align="center"> <img src="./assets/benchmarks.png" style="width: 100%;" id="benchmark-img">       </p>
-
-**Fathom‑Search-4B** sets a new state of the art on DeepSearch benchmarks outperforming all prior open source baselines. Our model reaches average of 52.1% on DeepSearch and 53.8% on General Reasoning benchmarks—improvements of +24.6 pp and +4.0 pp over Qwen3-4B + Search. On harder benchmarks such as FRAMES and WebWalkerQA we observe ≥100% relative gains, and > 3× on Seal0. It also exceeds prior SOTA II-Search-4B and surpasses larger Qwen2.5-7B based systems such as ZeroSearch-7B and R1-Searcher-7B
-
-**Generalization across domains**.
-Unlike most models that drop on out-of-distribution tasks, Fathom-Search-4B generalizes well. On GPQA-D and MedQA, Fathom-Search (Stage-2) achieves 60.1% and 75.4%, surpassing WebSailor-3B and ZeroSearch-3B by +23–25 pp, despite no domain-specific finetuning.
-
-Competing with closed-source models, Fathom-Search (Stage-2) outperforms GPT-4o + Search on SimpleQA, FRAMES, WebWalkerQA, HLE, and GPQA-D. It is +18.4 pp on WebWalkerQA and +7.0 pp on both Seal0 and GPQA-D, and attains ∼2× the accuracy of GPT-4o + Search accuracy on the hard general-reasoning benchmark HLE
+TODO
 
 <p align="center"> <img src="./assets/deepresearchbench.png" style="width: 100%;" id="deepresearchbench-img">       </p>
 
@@ -123,9 +117,9 @@ serving/host_serper.sh 8904 256 "openai:gpt-4.1-mini"
 serving/host_serper.sh 8904 256 "http://0.0.0.0:XXXX"
 ```
 
-### 4) Single‑question inference
+### 4) Run DeepResearch! (Single question inference)
 
-Run **Fathom‑Search** via `inference.py`:
+Run **Fathom‑DeeoSearch** via `inference.py`:
 
 ```bash
  python inference.py \
@@ -134,7 +128,7 @@ Run **Fathom‑Search** via `inference.py`:
     --model-url http://0.0.0.0:8902 \
     --tokenizer FractalAIResearch/Fathom-Search-4B \
     --summary-llm http://0.0.0.0:8903 \
-    --deepresearch 
+    --deepresearch #DeepResearch mode!, disable to get Fathom-Search-4B response Faster & shorter
 ```
 
 Tips:
