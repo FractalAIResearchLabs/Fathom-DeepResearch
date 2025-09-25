@@ -58,7 +58,7 @@ Unlike most models that drop on out-of-distribution tasks, Fathom-Search-4B gene
 
 Competing with closed-source models, Fathom-Search (Stage-2) outperforms GPT-4o + Search on SimpleQA, FRAMES, WebWalkerQA, HLE, and GPQA-D. It is +18.4 pp on WebWalkerQA and +7.0 pp on both Seal0 and GPQA-D, and attains ∼2× the accuracy of GPT-4o + Search accuracy on the hard general-reasoning benchmark HLE
 
-<p align="center"> <img src="./assets/deepsearchbench.png" style="width: 100%;" id="deepresearchbench-img">       </p>
+<p align="center"> <img src="./assets/deepresearchbench.png" style="width: 100%;" id="deepresearchbench-img">       </p>
 
 
 ## 🚀 Inference
