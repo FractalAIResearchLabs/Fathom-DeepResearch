@@ -15,6 +15,8 @@
 ---
 ## Introduction
 
+<p align="center"> <img src="./assets/main" style="width: 100%;" id="benchmark-img">       </p>
+
 
 
 ## ✨ Key Innovations
@@ -43,7 +45,6 @@
 ## 📊 Key Results
 
 <p align="center"> <img src="./assets/benchmarks.png" style="width: 100%;" id="benchmark-img">       </p>
-TODO
 
 <p align="center"> <img src="./assets/deepresearchbench.png" style="width: 100%;" id="deepresearchbench-img">       </p>
 
