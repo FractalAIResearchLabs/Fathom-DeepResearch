@@ -24,19 +24,19 @@
   We present a novel two-stage RL-Zero framework that helps *steer cognitive behaviors*  developed by the policy model, such as exploration and verification during training.
 
 - ⚡ **RAPO: Reward Aware Policy Optimization.**  
-  We introduce a zero-overhead modification of GRPO with *dataset pruning , advantage scaling , replay buffers , and a steerable step-level reward 🎚* that stabilizes multi-turn RL and enables long-horizon tool use .
+  We introduce a zero-overhead modification of GRPO with *dataset pruning , advantage scaling , replay buffers , and a steerable step-level reward that stabilizes multi-turn RL and enables long-horizon tool use .
 
 ## ✨ Key Contributions
 
 - 🎭 **DuetQA.**  
-  We release a 5K-sample dataset 📚 created through our novel *multi-agent self-play pipeline *, containing verifiable question–answer pairs that are impossible to answer without *live web search* , for DeepSearch model training.
+  We release a ~5K-sample dataset created through our novel *multi-agent self-play pipeline*, containing verifiable question–answer pairs that are impossible to answer without *live web search* , for DeepSearch model training.
 
 - 📝 **DeepResearch-SFT.**  
   A synthetic SFT corpus for converting downstream search/investigation traces of DeepSearch-enabled models into DeepResearch reports via an explicit *plan-then-write* protocol.
 
 - 🏆 **Fathom-Search-4B** & **Fathom-Synthesizer-4B**
-  SOTA 4B-parameter model trained to browse, extract, verify and reason over live web content acheiving SOTA Deep search benchmarks. 
-  4B-parameter model to summarize the Fathom-Search-4B outputs on deep research questions
+  SOTA 4B-parameter model trained to browse, extract, verify and reason over live web content acheiving  Deep search benchmarks. 
+  and a 4B-parameter model to syntehize the Fathom-Search-4B search traces into rich citation-dense DeepResearch reports.
 
 
 ---
