@@ -41,12 +41,12 @@ nohup python3 -m sglang.launch_server \
   --enable-metrics \
   --json-model-override-args "${JSON_OVERRIDE}" \
   > "${REPO_ROOT}/logs/sglang_${SERVED_NAME}_${MODEL_PORT}.log" 2>&1 < /dev/null &
-sleep 5
+echo "Loading Jan-Nano..."
+sleep 120
 wait_http "http://0.0.0.0:${MODEL_PORT}/health" || true
 
 set_pythonpath_eval
 python3 "${REPO_ROOT}/eval_search.py" \
-  --agent "recall" \
   --dataset "${DATASET_NAME}" \
   --data-root "${DATA_ROOT}" \
   --tokenizer "${TOKENIZER}" \
