@@ -100,7 +100,7 @@ python3 -m sglang.launch_server \
          --json-model-override-args '{"rope_type":"yarn","factor":2.0,"original_max_position_embeddings":40960}'
 ```
 
-### 3) Start the Tool Server (Serper+Jina)
+### 3) Fire up the Search Tools Server (Serper+Jina)
 
 Set the following in `scripts/.env`:
 
