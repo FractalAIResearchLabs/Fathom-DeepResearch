@@ -30,7 +30,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 
 # Prompts (ensure prompt.py is in PYTHONPATH or same dir)
-from prompts import DEEPRESEARCH_REPORT_SYS_PROMPT, SUMMARY_SYS_PROMPT  # type: ignore
+from prompts import DEEPRESEARCH_SYS_PROMPT  # type: ignore
 
 # Optional: HF tokenizer passthrough
 try:
