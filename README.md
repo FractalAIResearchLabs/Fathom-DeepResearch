@@ -280,7 +280,12 @@ scripts/eval_search_o1.sh \
   --model-path model_path \
   --model-port 1255 \
   --dataset dataset_name
+
+#cleanup ports after eval 
+ scripts/cleanup.sh 1255 1211 1212
 ```
+
+Run 
 
 ---
 
