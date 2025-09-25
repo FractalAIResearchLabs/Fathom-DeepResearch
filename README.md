@@ -166,11 +166,11 @@ Set the following in `scripts/.env`:
 
 (Recommended) Launch on **port 8901** with 256 workers with the **gpt-4.1-mini** as the search backend for querying web-pages:
 ```bash
-serving/host_serper.sh 8901 256 "openai:gpt-4.1-mini"
+serving/host_serper.sh 8904 256 "openai:gpt-4.1-mini"
 ```
 (Optionally) Launch search backend with a **locally hosted LLM of choice** at port XXXX and pass it as search backed (See step 2)
 ```bash
-serving/host_serper.sh 8901 256 "http://0.0.0.0:XXXX"
+serving/host_serper.sh 8904 256 "http://0.0.0.0:XXXX"
 ```
 
 ### 4) Single‑question inference
@@ -180,7 +180,7 @@ Run **Fathom‑Search** via `inference.py`:
 ```bash
  python inference.py \
     --question "Find out the names of all the companies that have been selected under the IndiaAI mission? Write a detailed report on what their deliverables are? What are the ways in which this mission will impact india in the coming decade?" \
-    --executors http://0.0.0.0:8901 \
+    --executors http://0.0.0.0:8904 \
     --model-url http://0.0.0.0:8902 \
     --tokenizer FractalAIResearch/Fathom-Search-4B \
     --summary-llm http://0.0.0.0:8903 \
