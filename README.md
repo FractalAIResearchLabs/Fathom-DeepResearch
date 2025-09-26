@@ -83,17 +83,17 @@ Launch on default port below **8902**, and **GPU 0**
 ```bash
 export CUDA_VISIBLE_DEVICES=0
 python -m sglang.launch_server \
-  --served-model-name  Fathom-Search-4B \
-  --model-path FractalAIResearch/Fathom-Search-4B \
-  --enable-metrics \
-  --dtype bfloat16 \
-  --host 0.0.0.0 \
-  --port 8902 \
-  --trust-remote-code \
-  --disable-radix-cache \
-  --disable-cuda-graph \
-  --context-length 40960 \
-  #--tp 2 #optional for multi-gpu inference
+          --served-model-name  Fathom-Search-4B \
+          --model-path FractalAIResearch/Fathom-Search-4B \
+          --enable-metrics \
+          --dtype bfloat16 \
+          --host 0.0.0.0 \
+          --port 8902 \
+          --trust-remote-code \
+          --disable-radix-cache \
+          --disable-cuda-graph \
+          --context-length 40960 \
+          #--tp 2 #optional for multi-gpu inference
 ```
 #### Fathom-Synthesizer-4B
 Launch on default port **8903** and **GPU 1**, we use YARN scaling with RoPE factor 2.0 for the synthesizer model
