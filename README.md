@@ -206,7 +206,7 @@ This section covers **batched evaluation** using the provided scripts in `script
 
 ```bash
 scripts/eval_fathom_search.sh \
-  --model-path model_path \
+  --model-path FractalAIResearch/Fathom-Search-4B \
   --model-port 1255 \
   --executors 1211,1212 \
   --dataset dataset_name \
@@ -214,16 +214,16 @@ scripts/eval_fathom_search.sh \
   --query-llm gpt-4.1-mini
 ```
 
-**Local Qwen3-4B as extractor on GPUs 2,3 (TP=2); main model on GPUs 0,1 (TP=2)**
+**Local Qwen3-32B as Query-LLM on GPUs 2,3 (TP=2); main model on GPUs 0,1 (TP=2)**
 
 ```bash
 scripts/eval_fathom_search.sh \
-  --model-path model_path \
+  --model-path FractalAIResearch/Fathom-Search-4B \
   --model-port 1255 \
   --executors 1211,1212 \
   --dataset dataset_name \
   --main-gpus 0,1 \
-  --query-llm /path/to/Qwen3-4B \
+  --query-llm Qwen3/Qwen3-32B \
   --query-port 1260 \
   --query-gpus 2,3
 ```
@@ -233,40 +233,40 @@ scripts/eval_fathom_search.sh \
 ```bash
 # II‑Search‑4B
 scripts/eval_ii_search.sh \
-  --model-path model_path \
+  --model-path Intelligent-Internet/II-Search-4B \
   --model-port 1255 \
   --executors 1211,1212 \
   --dataset dataset_name
 
 # Jan‑Nano‑32K
 scripts/eval_jan_nano_32K.sh \
-  --model-path model_path \
+  --model-path Menlo/Jan-nano \
   --model-port 1255 \
   --executors 1211,1212 \
   --dataset dataset_name
 
 # Jan‑Nano‑128K
 scripts/eval_jan_nano_128K.sh \
-  --model-path model_path \
+  --model-path Menlo/Jan-nano-128k \
   --model-port 1255 \
   --executors 1211,1212 \
   --dataset dataset_name
 
-# R1‑Searcher (7B)
+# R1‑Searcher(7B)
 scripts/eval_r1_searcher.sh \
-  --model-path model_path \
+  --model-path XXsongLALA/Qwen-2.5-7B-base-RAG-RL \
   --model-port 1255 \
   --dataset dataset_name
 
 # ZeroSearch
 scripts/eval_zerosearch.sh \
-  --model-path model_path \
+  --model-path Alibaba-NLP/ZeroSearch_wiki_V2_Qwen2.5_7B_Instruct \
   --model-port 1255 \
   --dataset dataset_name
 
 # search‑o1 (with Qwen3‑4B)
 scripts/eval_search_o1.sh \
-  --model-path model_path \
+  --model-path Qwen3/Qwen3-4B \
   --model-port 1255 \
   --dataset dataset_name
 
