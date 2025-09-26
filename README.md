@@ -147,11 +147,11 @@ Set the following in `scripts/.env`:
 
 (Recommended) Launch search tool server on **port 8904** with 256 workers with **gpt-4.1-mini** as the Qwery-LLM:
 ```bash
-serving/host_serper.sh 8904 256 "openai:gpt-4.1-mini"
+serving/host_server.sh 8904 256 "openai:gpt-4.1-mini"
 ```
 (Or) Launch search tool server on **port 8904** with a **locally hosted LLM of choice** via SGLANG at  **port 8905** (See step 2) as the Query-LLM:
 ```bash
-serving/host_serper.sh 8904 256 "http://0.0.0.0:8905"
+serving/host_server.sh 8904 256 "http://0.0.0.0:8905"
 ```
 
 ### 4) Run DeepResearch! (Single question inference)
