@@ -1,9 +1,11 @@
 # 🧮 Fathom-DeepResearch: Unlocking Long Horizon Information Retrieval And Synthesis For SLMs
 
-<div align="center">
-  
 
-[![space](https://img.shields.io/badge/HFSpace-🚀_Chat_with_Fathom_Search-red?logo=huggingface&style=for-the-badge)](https://huggingface.co/spaces/FractalAIResearch/Fathom-Search-4B)
+<div>
+[![space](https://img.shields.io/badge/HFSpace-🚀_Chat_with_Fathom_DeepResearch-yellow?logo=huggingface&style=for-the-badge)](https://huggingface.co/spaces/FractalAIResearch/Fathom-Search-4B)
+</div>
+<div align="center">
+
 [![model](https://img.shields.io/badge/HFModel-Fathom--Search--4B-red?logo=huggingface&style=for-the-badge)](https://huggingface.co/FractalAIResearch/Fathom-Search-4B)
 [![model](https://img.shields.io/badge/HFModel-Fathom--Synthesizer--4B-red?logo=huggingface&style=for-the-badge)](https://huggingface.co/FractalAIResearch/Fathom-Synthesizer-4B)
 [![dataset](https://img.shields.io/badge/HFData-DuetQA-green?logo=huggingface&style=for-the-badge)](https://huggingface.co/datasets/FractalAIResearch/DuetQA/)
