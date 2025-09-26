@@ -125,13 +125,13 @@ Set the following in `scripts/.env`:
 - **SERPER_CACHE_DIR**  — path to caching the search results from serper.dev to save cost and retrival time 
 - **JINA_CACHE_DIR**  — path to caching the search results from jina.ai to save cost and retrival time 
 
-(Recommended) Launch on **port 8901** with 256 workers with the **gpt-4.1-mini** as the search backend for querying web-pages:
+(Recommended) Launch search tool server on **port 8904** with 256 workers with **gpt-4.1-mini** as the search backend for querying web-pages:
 ```bash
 serving/host_serper.sh 8904 256 "openai:gpt-4.1-mini"
 ```
-(Optionally) Launch search backend with a **locally hosted LLM of choice** at port XXXX and pass it as search backed (See step 2)
+(Or) Launch search tool server on **port 8904** with a **locally hosted LLM of choice via SGLANG at  **port 8905** (See step 2) as the search backend for querying web-pages:
 ```bash
-serving/host_serper.sh 8904 256 "http://0.0.0.0:XXXX"
+serving/host_serper.sh 8904 256 "http://0.0.0.0:8905"
 ```
 
 ### 4) Run DeepResearch! (Single question inference)
@@ -149,7 +149,7 @@ Run **Fathom‑DeeoSearch** via `inference.py`:
 ```
 
 Tips:
-- Use multiple executors for load‑balancing: `--executors http://0.0.0.0:8901, http://0.0.0.0:8903`.
+- Use multiple executors for load‑balancing: `--executors http://0.0.0.0:8904, http://0.0.0.0:8905`.
 
 
 ---
