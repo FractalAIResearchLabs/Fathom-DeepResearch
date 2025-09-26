@@ -46,7 +46,7 @@ We introduce **Fathom-DeepResearch**, an agentic DeepResearch system that sets *
   We release a ~5K-sample dataset created through our novel *multi-agent self-play pipeline*, containing verifiable question–answer pairs that are impossible to answer without *live web search* , for DeepSearch model training.
 
 - 📝 **[DeepResearch-SFT](https://huggingface.co/datasets/FractalAIResearch/DeepResearch-SFT).**  
-  A synthetic SFT corpus for converting downstream search/investigation traces of DeepSearch-enabled models into DeepResearch reports via an explicit *plan-then-write* protocol.
+  A synthetic SFT corpus for converting downstream search/investigation traces of DeepSearch-enabled models into DeepResearch reports via our novel *plan-then-write* protocol.
 
 - 🏆 **[Fathom-Search-4B](https://huggingface.co/FractalAIResearch/Fathom-Search-4B)** & **[Fathom-Synthesizer-4B](https://huggingface.co/FractalAIResearch/Fathom-Synthesizer-4B)**
   Two 4B-parameter models trained to browse, extract, verify and reason over live web content, and synthesize the findings into rich citation-dense reports!
