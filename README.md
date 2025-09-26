@@ -66,7 +66,7 @@ We present Fathom DeepResearch, a state-of-the-art framework that sets new bench
 
 ## 🚀 Inference
 
-This section shows how to host the **tool web‑server** and the **SGLang model server**, then run **single‑question inference** via `inference.py`.
+This section shows how to host Fathom-DeepResearch locally and run inference on a single question!.
 
 ### 1) Environment setup
 
