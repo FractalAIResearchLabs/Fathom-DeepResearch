@@ -59,11 +59,10 @@ We present Fathom DeepResearch, a state-of-the-art framework that sets new bench
 
 <p align="center"> <img src="./assets/benchmarks.png" style="width: 100%;" id="benchmark-img">       </p>
 
-Fathom-DeepResearch establishes itself as a clear state-of-the-art by achieving large, non-incremental gains on the most challenging DeepSearch tasks like FRAMES, WebWalker, & Seal0, while also showing strong generalization to broader reasoning benchmarks like (GPQA-Diamond and Humanity’s Last Exam).
+
 
 <p align="center"> <img src="./assets/deepresearchbench.png" style="width: 100%;" id="deepresearchbench-img">       </p>
 
-On open-ended benchmark: DeepResearch-Bench, we outperform most proprietary closed-source systems (including Claude, Grok, and Perplexity Deep Research) underscoring its competitiveness in end-to-end deep research tasks.
 
 ## 🚀 Inference
 
