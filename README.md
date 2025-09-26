@@ -30,7 +30,7 @@
 
 <p align="center"> <img src="./assets/main.png" style="width: 100%;" id="benchmark-img">       </p>
 
-We introduce **Fathom-DeepResearch**, an agentic DeepResearch system that sets *state-of-the-art performance in the open-weights category* on search-intensive benchmarks **(SimpleQA, FRAMES, WebWalkerQA, Seal0)** and *outperforms closed-source DeepResearch agents like (Claude, Grok, Perplexity, GPT-4o)* on open-ended synthesis benchmark **DeepResearch-Bench**. Built on two specialized models, **Fathom-Search-4B**, optimized for long-horizon, evidence-seeking through live web search, and **Fathom-Synthesizer-4B**, designed for open-ended synthesis tasks. Our technical report details the innovations, training pipeline, and dataset strategies powering this leap in agentic research.
+We introduce **Fathom-DeepResearch**, an agentic DeepResearch system that sets *state-of-the-art performance in the open-weights category* on search-intensive benchmarks **(SimpleQA, FRAMES, WebWalkerQA, Seal0)** and *outperforms closed-source DeepResearch agents like (Claude, Grok, Perplexity, GPT-4o)* on open-ended synthesis benchmark **DeepResearch-Bench**. Built on two specialized models, **Fathom-Search-4B**, optimized for long-horizon, evidence-seeking through live web search, and **Fathom-Synthesizer-4B**, designed for open-ended synthesis tasks. Refer to our **technical report** for our training recipe and more exciting results!
 
 ## ✨ Key Innovations
 
