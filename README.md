@@ -36,20 +36,20 @@ We introduce **Fathom-DeepResearch**, an agentic DeepResearch system that sets *
 
 ## ✨ Key Release Assets
 
-- 🎭 **[DuetQA](https://huggingface.co/datasets/FractalAIResearch/DuetQA).**  
-  We release a ~5K-sample dataset created through our novel *multi-agent self-play pipeline*, containing verifiable question–answer pairs that are impossible to answer without *live web search* , for DeepSearch model training.
+- 🎭 **[DuetQA](https://huggingface.co/datasets/FractalAIResearch/DuetQA).**
+    We release a ~5K-sample dataset created through our novel *multi-agent self-play pipeline*, containing verifiable question–answer pairs that are impossible to answer without *live web search* , for DeepSearch model training.
 
 - 📝 **[DeepResearch-SFT](https://huggingface.co/datasets/FractalAIResearch/DeepResearch-SFT).**  
   We are releasing a synthetic SFT corpus used to train **Fathom-Syntheizer-4B**, to enable the conversion of  downstream search/investigation traces of DeepSearch enabled models into DeepResearch reports via our novel *plan-then-write* protocol.
 
-- 🏆 **[Fathom-Search-4B](https://huggingface.co/FractalAIResearch/Fathom-Search-4B)** & **[Fathom-Synthesizer-4B](https://huggingface.co/FractalAIResearch/Fathom-Synthesizer-4B)** 
-  We opensource two 4B-parameter models trained to browse, extract, verify and reason over live web content, and synthesize the findings into rich citation-dense reports!
+- 🏆 **[Fathom-Search-4B](https://huggingface.co/FractalAIResearch/Fathom-Search-4B)** & **[Fathom-Synthesizer-4B](https://huggingface.co/FractalAIResearch/Fathom-Synthesizer-4B)**
+   We opensource two 4B-parameter models trained to browse, extract, verify and reason over live web content, and synthesize the findings into rich citation-dense reports!
 
 - 🌐 **[Fathom-WebAgents](https://github.com/FractalAIResearchLabs/Fathom-DeepResearch/tree/main/serving/web_agents).**  
-  We open-source our **search tool server**, built on top of **Jina-AI**, **Crawl4AI**, **Trafilatura**, and **Serper.dev**, which acts as a powerful search backend, optimized to handle large volumes of  **asynchronous requests** and includes specialized handlers for diverse sources such as **YouTube, PDFs, Reddit, Github**, and more.
+   We open-source our **search tool server**, built on top of **Jina-AI**, **Crawl4AI**, **Trafilatura**, and **Serper.dev**, which acts as a powerful search backend, optimized to handle large volumes of  **asynchronous requests** and includes specialized handlers for diverse sources such as **YouTube, PDFs, Reddit, Github**, and more.
   
 - 📝 **[Technical Report](./assets/Fathom-DeepResearch.pdf)** 
-  We release technical report outlining key training innovations, dataset generation pipeline, complete training startegy and evaluation!
+   We release technical report outlining key training innovations, dataset generation pipeline, complete training startegy and evaluation!
 
 ## ✨ Key Innovations
 
