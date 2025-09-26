@@ -1,19 +1,28 @@
 # 🧮 Fathom-DeepResearch: Unlocking Long Horizon Information Retrieval And Synthesis For SLMs
 
 
-<div>
-<!-- [![space](https://img.shields.io/badge/HFSpace-🚀_Chat_with_Fathom_DeepResearch-yellow?logo=huggingface&style=for-the-badge)](https://huggingface.co/spaces/FractalAIResearch/Fathom-Search-4B) -->
-[![HF Space](https://img.shields.io/badge/HFSpace-🚀_Chat_with_Fathom_DeepResearch-yellow?logo=huggingface&style=for-the-badge)](https://huggingface.co/spaces/FractalAIResearch/Fathom-Search-4B)
+<div align="center">
+
+[![space](https://img.shields.io/badge/HFSpace-🚀_Chat_with_Fathom_DeepResearch-yellow?logo=huggingface&style=for-the-badge)](https://huggingface.co/spaces/FractalAIResearch/Fathom-Search-4B)
 
 </div>
+
 <div align="center">
 
 [![model](https://img.shields.io/badge/HFModel-Fathom--Search--4B-red?logo=huggingface&style=for-the-badge)](https://huggingface.co/FractalAIResearch/Fathom-Search-4B)
 [![model](https://img.shields.io/badge/HFModel-Fathom--Synthesizer--4B-red?logo=huggingface&style=for-the-badge)](https://huggingface.co/FractalAIResearch/Fathom-Synthesizer-4B)
+
+</div>
+
+<div align="center">
+  
 [![dataset](https://img.shields.io/badge/HFData-DuetQA-green?logo=huggingface&style=for-the-badge)](https://huggingface.co/datasets/FractalAIResearch/DuetQA/)
 [![dataset](https://img.shields.io/badge/HFData-DeepResearch--SFT-green?logo=huggingface&style=for-the-badge)](https://huggingface.co/datasets/FractalAIResearch/DeepResearch-SFT/)
 
 </div>
+
+
+
 
 
 ---
