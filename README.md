@@ -114,7 +114,7 @@ python3 -m sglang.launch_server \
          --json-model-override-args '{"rope_type":"yarn","factor":2.0,"original_max_position_embeddings":40960}' \
         #--tp 2 #optional for multi-gpu inference
 ```
-#### (Optinal) Query-LLM for search backend
+#### (Optional) Query-LLM for search backend
 Launch on default port **8905** and **GPU 3**
 ```
 export CUDA_VISIBLE_DEVICES=3
