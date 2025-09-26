@@ -150,7 +150,7 @@ Set the following in `scripts/.env`:
 - **SERPER_CACHE_DIR**  — path to caching the search results from serper.dev to save cost and retrival time 
 - **JINA_CACHE_DIR**  — path to caching the search results from jina.ai to save cost and retrival time 
 
-(Recommended) Launch search tool server on **port 8904** with 256 workers with **gpt-4.1-mini** as the Qwery-LLM:
+(Recommended) Launch search tool server on **port 8904** with 256 workers with **gpt-4.1-mini** as the Query-LLM:
 ```bash
 serving/host_server.sh 8904 256 "openai:gpt-4.1-mini"
 ```
@@ -158,6 +158,9 @@ serving/host_server.sh 8904 256 "openai:gpt-4.1-mini"
 ```bash
 serving/host_server.sh 8904 256 "http://0.0.0.0:8905"
 ```
+
+Note: Our search backend also supports `web_search` and `web_visit` functions for searching the web and returning entire web-page w/o the need for a Query-LLM.
+Used by model like `Jan-Naao` and `II-Search-4B` in their implementation.
 
 ### 4) Run DeepResearch! (Single question inference)
 
