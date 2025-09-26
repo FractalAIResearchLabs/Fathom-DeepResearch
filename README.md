@@ -24,7 +24,7 @@
 </div>
 
 
-
+---
 
 <p align="center"> <img src="./assets/main-plots.png" style="width: 100%;" id="benchmark-img">       </p>
 
