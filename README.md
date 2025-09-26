@@ -135,6 +135,8 @@ python3 -m sglang.launch_server \
 
 ### 3) Fire up the Search Tools Server (Serper + Jina + Search LLM)
 
+<p align="center"> <img src="./assets/search-backend" style="width: 100%;" id="benchmark-img">       </p>
+
 Set the following in `scripts/.env`:
 
 - **SERPER_API_KEY** (get from serper.dev; ~2,500 free queries without any card) (necessary for live web-search)
