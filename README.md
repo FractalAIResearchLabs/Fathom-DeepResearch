@@ -66,7 +66,7 @@ We present Fathom DeepResearch, a state-of-the-art framework that sets new bench
 
 ## 🚀 Inference
 
-This section shows how to host Fathom-DeepResearch locally and run inference on a single question!.
+This section shows how to host **Fathom-DeepResearch** *locally* and run inference!.
 
 ### 1) Environment setup
 
@@ -80,9 +80,9 @@ playwright install
 ### 2) Start the Model Servers (SGLang)
 Change `--model-path` to your model identifier (`FractalAIResearch/Fathom-Search-4B`) or local path.
 #### Fathom-Search-4B
-Launch on default port below **8902**, and **GPUs 0,1**
+Launch on default port below **8902**, and **GPU 0**
 ```bash
-export CUDA_VISIBLE_DEVICES=0,1
+export CUDA_VISIBLE_DEVICES=0
 python -m sglang.launch_server \
   --served-model-name  Fathom-Search-4B \
   --model-path FractalAIResearch/Fathom-Search-4B \
@@ -94,16 +94,15 @@ python -m sglang.launch_server \
   --disable-radix-cache \
   --disable-cuda-graph \
   --context-length 40960 \
-  --tp 2 #optional for multi-gpu inference
+  #--tp 2 #optional for multi-gpu inference
 ```
 #### Fathom-Synthesizer-4B
-Launch on default port below **8903**  **GPUs 2,3**, we use YARN scaling with RoPE factor 2.0 for the synthesizer model
+Launch on default port **8903** and **GPU 1**, we use YARN scaling with RoPE factor 2.0 for the synthesizer model
 ```
 export CUDA_VISIBLE_DEVICES=2,3
 python3 -m sglang.launch_server \
          --served-model-name Fathom-Synthesizer-4B \
          --model-path FractalAIResearch/Fathom-Synthesizer-4B \
-         --tp 2 \
          --enable-metrics \
          --dtype bfloat16 \
          --host 0.0.0.0 \
@@ -113,7 +112,8 @@ python3 -m sglang.launch_server \
          --disable-cuda-graph \
          --disable-cuda-graph \
          --context-length 131092 \
-         --json-model-override-args '{"rope_type":"yarn","factor":2.0,"original_max_position_embeddings":40960}'
+         --json-model-override-args '{"rope_type":"yarn","factor":2.0,"original_max_position_embeddings":40960}' \
+        #--tp 2 #optional for multi-gpu inference
 ```
 
 ### 3) Fire up the Search Tools Server (Serper + Jina + Search LLM)
