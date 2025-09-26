@@ -119,7 +119,7 @@ Launch on default port **8905** and **GPU 3**
 ```
 export CUDA_VISIBLE_DEVICES=3
 python3 -m sglang.launch_server \
-         --served-model-name Fathom-Synthesizer-4B \
+         --served-model-name Query-LLM \
          --model-path Qwen3/Qwen3-32B #Any LLM of choice to act as the query LLM for search tool server \
          --enable-metrics \
          --dtype bfloat16 \
