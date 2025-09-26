@@ -116,7 +116,7 @@ python -m sglang.launch_server \
 ```
 #### Fathom-Synthesizer-4B
 Launch on default port **8903** and **GPU 1**, we use YARN scaling with RoPE factor 2.0 for the synthesizer model
-```
+```bash
 export CUDA_VISIBLE_DEVICES=1
 python3 -m sglang.launch_server \
          --served-model-name Fathom-Synthesizer-4B \
@@ -135,7 +135,7 @@ python3 -m sglang.launch_server \
 ```
 #### (Optional) Query-LLM for search backend
 Launch on default port **8905** and **GPU 3**
-```
+```bash
 export CUDA_VISIBLE_DEVICES=3
 python3 -m sglang.launch_server \
          --served-model-name Query-LLM \
