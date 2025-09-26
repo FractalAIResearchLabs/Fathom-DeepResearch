@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-eval_baseline.py — Minimal baseline evaluator (single or multi-threaded)
+eval_nosearch.py — Minimal baseline evaluator (single or multi-threaded)
 
 What this script does
 ---------------------
@@ -19,19 +19,12 @@ Dataset format (one JSON object per line):
 Quick start
 -----------
 export OPENAI_API_KEY=sk-...   # for judge
-python eval_baseline.py \
+python eval_nosearch.py \
   --dataset /path/to/frames.jsonl \
-  --out /tmp/evals/baseline/frames-qwen8b.jsonl \
+  --out /path/to/output/folder/filename.jsonl \
   --model-url http://0.0.0.0:1240 \
-  --tokenizer-path /path/to/Qwen3-4B \
+  --tokenizer-path /path/to/toeknizer/model \
   --mode multi --workers 64
-
-Notes
------
-- We first try vLLM's `/generate`. If it errors, we fall back to `/v1/chat/completions`.
-- For the OpenAI-style fallback, provide `--chat-model` if your server requires a model name.
-- For large contexts, we auto-compute `max_new_tokens` by subtracting the prompt tokens
-  from `--max-tokens` (with a small safety buffer).
 """
 
 from __future__ import annotations
