@@ -28,9 +28,7 @@
 
 <p align="center"> <img src="./assets/main.png" style="width: 100%;" id="benchmark-img">       </p>
 
-We present Fathom DeepResearch, a SOTA deep research framework setting new SOTA across search benchmarks including FRAMES, WebWalkerQA, Seal0. Also on open ended Deep Research Bench. 
-We release **Fathom-Search-4B**, 4B parameter LLM specifically designed for long-horizon, deep information-seeking tasks. **Fathom-Synthesizer-4B**, a accompanying 4B LLM for expert report synthesis. 
-We also release technical report containing our meticulously designed training and dataset preperation strategies.
+We present Fathom DeepResearch, a state-of-the-art framework that sets new benchmarks across search-intensive evaluations, including FRAMES, WebWalkerQA, Seal0, and the open-ended Deep Research Bench. Alongside this, we release Fathom-Search-4B, a 4B-parameter model purpose-built for long-horizon, deep information-seeking, and Fathom-Synthesizer-4B, its complementary model specialized in expert-grade report synthesis. Our accompanying technical report details the key innovations, training pipeline and dataset preparation strategies that have been used to build Fathom-DeepResearch. 
 
 ## ✨ Key Innovations
 
@@ -38,7 +36,7 @@ We also release technical report containing our meticulously designed training a
   We present a novel two-stage RL-Zero framework that helps *steer cognitive behaviors*  developed by the policy model, such as exploration and verification during training.
 
 - ⚡ **RAPO: Reward Aware Policy Optimization.**  
-  We introduce a zero-overhead modification of GRPO with *dataset pruning , advantage scaling , replay buffers , and a steerable step-level reward that stabilizes multi-turn RL and enables long-horizon tool use .
+  We introduce a zero-overhead modification of GRPO with *dataset pruning* , *advantage scaling* , *replay buffers* , and a *steerable step-level* reward that stabilizes multi-turn RL and enables long-horizon tool use.
 
 ## ✨ Key Release Assets
 
