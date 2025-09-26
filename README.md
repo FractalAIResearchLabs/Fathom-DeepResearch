@@ -1,4 +1,4 @@
-# 🧮 Fathom-DeepResearch: Unlocking Long Horizon Information Retrieval And Synthesis For SLMs
+# Fathom-DeepResearch: Unlocking Long Horizon Information Retrieval And Synthesis For SLMs
 
 
 <div align="center">
