@@ -99,7 +99,7 @@ python -m sglang.launch_server \
 #### Fathom-Synthesizer-4B
 Launch on default port **8903** and **GPU 1**, we use YARN scaling with RoPE factor 2.0 for the synthesizer model
 ```
-export CUDA_VISIBLE_DEVICES=2,3
+export CUDA_VISIBLE_DEVICES=1
 python3 -m sglang.launch_server \
          --served-model-name Fathom-Synthesizer-4B \
          --model-path FractalAIResearch/Fathom-Synthesizer-4B \
