@@ -80,7 +80,7 @@ playwright install
 ### 2) Start the Model Servers (SGLang)
 Change `--model-path` to your model identifier (`FractalAIResearch/Fathom-Search-4B`) or local path.
 #### Fathom-Search-4B
-Launch on default port below **8902** 
+Launch on default port below **8902**, and **GPUs 0,1**
 ```bash
 export CUDA_VISIBLE_DEVICES=0,1
 python -m sglang.launch_server \
@@ -97,7 +97,7 @@ python -m sglang.launch_server \
   --tp 2 #optional for multi-gpu inference
 ```
 #### Fathom-Synthesizer-4B
-Launch on default port below **8903**, we use YARN scaling with RoPE factor 2.0 for the synthesizer model
+Launch on default port below **8903**  **GPUs 2,3**, we use YARN scaling with RoPE factor 2.0 for the synthesizer model
 ```
 export CUDA_VISIBLE_DEVICES=2,3
 python3 -m sglang.launch_server \
