@@ -2,7 +2,9 @@
 
 
 <div>
-[![space](https://img.shields.io/badge/HFSpace-🚀_Chat_with_Fathom_DeepResearch-yellow?logo=huggingface&style=for-the-badge)](https://huggingface.co/spaces/FractalAIResearch/Fathom-Search-4B)
+<!-- [![space](https://img.shields.io/badge/HFSpace-🚀_Chat_with_Fathom_DeepResearch-yellow?logo=huggingface&style=for-the-badge)](https://huggingface.co/spaces/FractalAIResearch/Fathom-Search-4B) -->
+[![HF Space](https://img.shields.io/badge/HFSpace-🚀_Chat_with_Fathom_DeepResearch-yellow?logo=huggingface&style=for-the-badge)](https://huggingface.co/spaces/FractalAIResearch/Fathom-Search-4B)
+
 </div>
 <div align="center">
 
