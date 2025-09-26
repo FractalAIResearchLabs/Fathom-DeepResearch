@@ -77,7 +77,7 @@ playwright install
 ```
 
 ### 2) Start the Model Servers (SGLang)
-Change `--model-path` to your model identifier (`FractalAIResearch/Fathom-Search-4B`) or local path.
+Change `--model-path` to your model identifier (eg. `FractalAIResearch/Fathom-Search-4B`) or local path.
 #### Fathom-Search-4B
 Launch on default port below **8902**, and **GPU 0**
 ```bash
