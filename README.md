@@ -16,7 +16,9 @@
 
 <p align="center"> <img src="./assets/main.png" style="width: 100%;" id="benchmark-img">       </p>
 
-
+We present Fathom DeepResearch, a SOTA deep research framework setting new SOTA across search benchmarks including FRAMES, WebWalkerQA, Seal0. Also on open ended Deep Research Bench. 
+We release **Fathom-Search-4B**, 4B parameter LLM specifically designed for long-horizon, deep information-seeking tasks. **Fathom-Synthesizer-4B**, a accompanying 4B LLM for expert report synthesis. 
+We also release technical report containing our meticulously designed training and dataset preperation strategies.
 
 ## ✨ Key Innovations
 
@@ -26,15 +28,15 @@
 - ⚡ **RAPO: Reward Aware Policy Optimization.**  
   We introduce a zero-overhead modification of GRPO with *dataset pruning , advantage scaling , replay buffers , and a steerable step-level reward that stabilizes multi-turn RL and enables long-horizon tool use .
 
-## ✨ Key Contributions
+## ✨ Key Release Assets
 
-- 🎭 **DuetQA.**  
+- 🎭 **[DuetQA](https://huggingface.co/datasets/FractalAIResearch/DuetQA).**  
   We release a ~5K-sample dataset created through our novel *multi-agent self-play pipeline*, containing verifiable question–answer pairs that are impossible to answer without *live web search* , for DeepSearch model training.
 
-- 📝 **DeepResearch-SFT.**  
+- 📝 **[DeepResearch-SFT](https://huggingface.co/datasets/FractalAIResearch/DeepResearch-SFT).**  
   A synthetic SFT corpus for converting downstream search/investigation traces of DeepSearch-enabled models into DeepResearch reports via an explicit *plan-then-write* protocol.
 
-- 🏆 **Fathom-Search-4B** & **Fathom-Synthesizer-4B**
+- 🏆 **[Fathom-Search-4B](https://huggingface.co/FractalAIResearch/Fathom-Search-4B)** & **[Fathom-Synthesizer-4B](https://huggingface.co/FractalAIResearch/Fathom-Synthesizer-4B)**
   SOTA 4B-parameter model trained to browse, extract, verify and reason over live web content acheiving  Deep search benchmarks. 
   and a 4B-parameter model to syntehize the Fathom-Search-4B search traces into rich citation-dense DeepResearch reports.
 
@@ -45,8 +47,11 @@
 
 <p align="center"> <img src="./assets/benchmarks.png" style="width: 100%;" id="benchmark-img">       </p>
 
+Fathom-DeepResearch establishes itself as a clear state-of-the-art by achieving large, non-incremental gains on the most challenging DeepSearch tasks like FRAMES, WebWalker, & Seal0, while also showing strong generalization to broader reasoning benchmarks like (GPQA-Diamond and Humanity’s Last Exam).
+
 <p align="center"> <img src="./assets/deepresearchbench.png" style="width: 100%;" id="deepresearchbench-img">       </p>
 
+On open-ended benchmark: DeepResearch-Bench, we outperform most proprietary closed-source systems (including Claude, Grok, and Perplexity Deep Research) underscoring its competitiveness in end-to-end deep research tasks.
 
 ## 🚀 Inference
 
