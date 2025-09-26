@@ -133,7 +133,7 @@ python3 -m sglang.launch_server \
         #--tp 2 #optional for multi-gpu inference
 ```
 
-### 3) Fire up the Search Tools Server (Serper + Jina + Search LLM)
+### 3) Fire up the Search Tools Server (Serper + Jina + Query LLM)
 
 <p align="center"> <img src="./assets/search.png" style="width: 100%;" id="benchmark-img">       </p>
 
