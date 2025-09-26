@@ -30,7 +30,7 @@
 
 <p align="center"> <img src="./assets/main.png" style="width: 100%;" id="benchmark-img">       </p>
 
-We present Fathom DeepResearch, a state-of-the-art framework that sets new benchmarks across search-intensive evaluations, including FRAMES, WebWalkerQA, Seal0, and the open-ended Deep Research Bench. Alongside this, we release Fathom-Search-4B, a 4B-parameter model purpose-built for long-horizon, deep information-seeking, and Fathom-Synthesizer-4B, its complementary model specialized in expert-grade report synthesis. Our accompanying technical report details the key innovations, training pipeline and dataset preparation strategies that have been used to build Fathom-DeepResearch. 
+We introduce **Fathom-DeepResearch**, an agentic DeepResearch system that sets state-of-the-art in the open-weights category on search-intensive benchmarks **(SimpleQA, FRAMES, WebWalkerQA, Seal0)** and outperforms closed-source DeepResearch agents like (Claude, Grok, Perplexity, GPT-4o) on open-ended synthesis benchmark **DeepResearch-Bench**. Built on two specialized models, **Fathom-Search-4B**, optimized for long-horizon, evidence-seeking through live web search, and **Fathom-Synthesizer-4B**, designed for open-ended synthesis tasks. Our technical report details the innovations, training pipeline, and dataset strategies powering this leap in agentic research.
 
 ## ✨ Key Innovations
 
