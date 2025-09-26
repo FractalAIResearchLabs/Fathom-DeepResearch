@@ -135,7 +135,7 @@ python3 -m sglang.launch_server \
 
 ### 3) Fire up the Search Tools Server (Serper + Jina + Search LLM)
 
-<p align="center"> <img src="./assets/search-backend" style="width: 100%;" id="benchmark-img">       </p>
+<p align="center"> <img src="./assets/search-backend.png" style="width: 100%;" id="benchmark-img">       </p>
 
 Set the following in `scripts/.env`:
 
