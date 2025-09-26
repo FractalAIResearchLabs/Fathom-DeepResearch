@@ -96,7 +96,6 @@ try:
 except Exception:
     raise SystemExit("❌ The 'openai' package is required for judging. Install via `pip install openai`.")
 
-print("A"*100)
 # ──────────────────────────────────────────────────────────────────────────────
 # Utility helpers
 # ──────────────────────────────────────────────────────────────────────────────
