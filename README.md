@@ -4,6 +4,8 @@
 <div align="center">
 
 [![space](https://img.shields.io/badge/HFSpace-🚀_Chat_with_Fathom_DeepResearch-yellow?logo=huggingface&style=for-the-badge)](https://huggingface.co/spaces/FractalAIResearch/Fathom-Search-4B)
+[![report](https://img.shields.io/badge/📄_Technical_Report-Fathom_DeepResearch-blue?logo=arxiv&style=for-the-badge)](https://github.com/FractalAIResearchLabs/Fathom-DeepResearch/blob/main/assets/Fathom-DeepResearch.pdf)
+
 
 </div>
 
