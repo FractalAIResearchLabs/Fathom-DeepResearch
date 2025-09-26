@@ -101,7 +101,7 @@ Launch on default port **8903** and **GPU 1**, we use YARN scaling with RoPE fac
 export CUDA_VISIBLE_DEVICES=1
 python3 -m sglang.launch_server \
          --served-model-name Fathom-Synthesizer-4B \
-         --model-path FractalAIResearch/Fathom-Synthesizer-4B \
+         --model-path Qwen3/Qwen3-32B #Any LLM of choice to act as the query LLM for search tool server \
          --enable-metrics \
          --dtype bfloat16 \
          --host 0.0.0.0 \
@@ -112,6 +112,24 @@ python3 -m sglang.launch_server \
          --disable-cuda-graph \
          --context-length 131092 \
          --json-model-override-args '{"rope_type":"yarn","factor":2.0,"original_max_position_embeddings":40960}' \
+        #--tp 2 #optional for multi-gpu inference
+```
+#### (Optinal) Query-LLM for search backend
+Launch on default port **8905** and **GPU 3**
+```
+export CUDA_VISIBLE_DEVICES=3
+python3 -m sglang.launch_server \
+         --served-model-name Fathom-Synthesizer-4B \
+         --model-path FractalAIResearch/Fathom-Synthesizer-4B \
+         --enable-metrics \
+         --dtype bfloat16 \
+         --host 0.0.0.0 \
+         --port 8905 \
+         --trust-remote-code \
+         --disable-radix-cache \
+         --disable-cuda-graph \
+         --disable-cuda-graph \
+         --context-length 131092 \
         #--tp 2 #optional for multi-gpu inference
 ```
 
@@ -129,7 +147,7 @@ Set the following in `scripts/.env`:
 ```bash
 serving/host_serper.sh 8904 256 "openai:gpt-4.1-mini"
 ```
-(Or) Launch search tool server on **port 8904** with a **locally hosted LLM of choice via SGLANG at  **port 8905** (See step 2) as the search backend for querying web-pages:
+(Or) Launch search tool server on **port 8904** with a **locally hosted LLM of choice** via SGLANG at  **port 8905** (See step 2) as the search backend for querying web-pages:
 ```bash
 serving/host_serper.sh 8904 256 "http://0.0.0.0:8905"
 ```
