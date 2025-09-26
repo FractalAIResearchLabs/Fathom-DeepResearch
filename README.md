@@ -78,9 +78,9 @@ playwright install
 ```
 
 ### 2) Start the Model Servers (SGLang)
-Change `--model-path` to your model identifier or local path (e.g., `FractalAIResearch/Fathom-Search-4B` or `model_path`).
+Change `--model-path` to your model identifier (`FractalAIResearch/Fathom-Search-4B`) or local path.
 #### Fathom-Search-4B
-Default port below for is **8902** 
+Launch on default port below **8902** 
 ```bash
 export CUDA_VISIBLE_DEVICES=0,1
 python -m sglang.launch_server \
@@ -97,7 +97,7 @@ python -m sglang.launch_server \
   --tp 2 #optional for multi-gpu inference
 ```
 #### Fathom-Synthesizer-4B
-Default port below for is **8903**, we use YARN scaling with RoPE factor 2.0 for the synthesizer model
+Launch on default port below **8903**, we use YARN scaling with RoPE factor 2.0 for the synthesizer model
 ```
 export CUDA_VISIBLE_DEVICES=2,3
 python3 -m sglang.launch_server \
@@ -116,7 +116,7 @@ python3 -m sglang.launch_server \
          --json-model-override-args '{"rope_type":"yarn","factor":2.0,"original_max_position_embeddings":40960}'
 ```
 
-### 3) Fire up the Search Tools Server (Serper+Jina)
+### 3) Fire up the Search Tools Server (Serper + Jina + Search LLM)
 
 Set the following in `scripts/.env`:
 
