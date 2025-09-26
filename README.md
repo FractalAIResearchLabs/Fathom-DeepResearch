@@ -32,13 +32,7 @@ We introduce **Fathom-DeepResearch**, an agentic DeepResearch system that sets *
 
 <p align="center"> <img src="./assets/main.png" style="width: 100%;" id="benchmark-img">       </p>
 
-## ✨ Key Innovations
 
-- 🧭 **RL Zero framework for DeepSearch training.**  
-  We present a novel two-stage RL-Zero framework that helps *steer cognitive behaviors*  developed by the policy model, such as exploration and verification during training.
-
-- ⚡ **RAPO: Reward Aware Policy Optimization.**  
-  We introduce a zero-overhead modification of GRPO with *dataset pruning* , *advantage scaling* , *replay buffers* , and a *steerable step-level* reward that stabilizes multi-turn RL and enables long-horizon tool use.
 
 ## ✨ Key Release Assets
 
@@ -56,6 +50,14 @@ We introduce **Fathom-DeepResearch**, an agentic DeepResearch system that sets *
   
 - 📝 **[Technical Report](./assets/Fathom-DeepResearch.pdf)**
   We release technical report outlining key training innovations, dataset generation pipeline, complete training startegy and evaluation!
+
+## ✨ Key Innovations
+
+- 🧭 **RL Zero framework for DeepSearch training.**  
+  We present a novel two-stage RL-Zero framework that helps *steer cognitive behaviors*  developed by the policy model, such as exploration and verification during training.
+
+- ⚡ **RAPO: Reward Aware Policy Optimization.**  
+  We introduce a zero-overhead modification of GRPO with *dataset pruning* , *advantage scaling* , *replay buffers* , and a *steerable step-level* reward that stabilizes multi-turn RL and enables long-horizon tool use.
 
 
 
