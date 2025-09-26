@@ -145,11 +145,11 @@ Set the following in `scripts/.env`:
 - **SERPER_CACHE_DIR**  — path to caching the search results from serper.dev to save cost and retrival time 
 - **JINA_CACHE_DIR**  — path to caching the search results from jina.ai to save cost and retrival time 
 
-(Recommended) Launch search tool server on **port 8904** with 256 workers with **gpt-4.1-mini** as the search backend for querying web-pages:
+(Recommended) Launch search tool server on **port 8904** with 256 workers with **gpt-4.1-mini** as the Qwery-LLM:
 ```bash
 serving/host_serper.sh 8904 256 "openai:gpt-4.1-mini"
 ```
-(Or) Launch search tool server on **port 8904** with a **locally hosted LLM of choice** via SGLANG at  **port 8905** (See step 2) as the search backend for querying web-pages:
+(Or) Launch search tool server on **port 8904** with a **locally hosted LLM of choice** via SGLANG at  **port 8905** (See step 2) as the Query-LLM:
 ```bash
 serving/host_serper.sh 8904 256 "http://0.0.0.0:8905"
 ```
