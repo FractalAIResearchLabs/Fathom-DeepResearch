@@ -52,9 +52,8 @@ We introduce **Fathom-DeepResearch**, an agentic DeepResearch system that sets *
   Two 4B-parameter models trained to browse, extract, verify and reason over live web content, and synthesize the findings into rich citation-dense reports!
 
 - 🌐 **[Fathom-WebAgents](https://github.com/FractalAIResearchLabs/Fathom-DeepResearch/tree/main/serving/web_agents).**  
-  We open-source our **search tool server**, built on top of **Jina-AI**, **Crawl4AI**, **Trafilatura**, and **Serper.dev**, which acts as a powerful search backend.  
-  It is optimized to handle large volumes of **asynchronous requests** and includes specialized handlers for diverse sources such as **YouTube, PDFs, Reddit**, and more.  
-  We hope the open-source community will extend and improve upon this backend to support broader research workflows.  
+  We open-source our **search tool server**, built on top of **Jina-AI**, **Crawl4AI**, **Trafilatura**, and **Serper.dev**, which acts as a powerful search backend, optimized to handle large volumes of  **asynchronous requests** and includes specialized handlers for diverse sources such as **YouTube, PDFs, Reddit**, and more.  
+ 
 
 
 
