@@ -30,7 +30,7 @@
 
 <p align="center"> <img src="./assets/main.png" style="width: 100%;" id="benchmark-img">       </p>
 
-We introduce **Fathom-DeepResearch**, an agentic DeepResearch system that sets *state-of-the-art performance in the open-weights category* on search-intensive benchmarks **(SimpleQA, FRAMES, WebWalkerQA, Seal0)** and *outperforms closed-source DeepResearch agents like (Claude, Grok, Perplexity, GPT-4o)* on open-ended synthesis benchmark **DeepResearch-Bench**. Built on two specialized models, **Fathom-Search-4B**, optimized for long-horizon, evidence-seeking through live web search, and **Fathom-Synthesizer-4B**, designed for open-ended synthesis tasks. Refer to our **technical report** for our training recipe and more exciting results!
+We introduce **Fathom-DeepResearch**, an agentic DeepResearch system that sets *state-of-the-art performance in the open-weights category* on search-intensive benchmarks **(SimpleQA, FRAMES, WebWalkerQA, Seal0)** and *outperforms closed-source DeepResearch agents like (Claude, Grok, Perplexity, GPT-4o)* on open-ended synthesis benchmark **DeepResearch-Bench**. Built on two specialized models, **Fathom-Search-4B**, optimized for long-horizon, evidence-seeking through live web search, and **Fathom-Synthesizer-4B**, designed for open-ended synthesis and report generation. Refer to our **technical report** for our training recipe and more exciting results!
 
 ## ✨ Key Innovations
 
@@ -49,8 +49,7 @@ We introduce **Fathom-DeepResearch**, an agentic DeepResearch system that sets *
   A synthetic SFT corpus for converting downstream search/investigation traces of DeepSearch-enabled models into DeepResearch reports via an explicit *plan-then-write* protocol.
 
 - 🏆 **[Fathom-Search-4B](https://huggingface.co/FractalAIResearch/Fathom-Search-4B)** & **[Fathom-Synthesizer-4B](https://huggingface.co/FractalAIResearch/Fathom-Synthesizer-4B)**
-  SOTA 4B-parameter model trained to browse, extract, verify and reason over live web content acheiving  Deep search benchmarks. 
-  and a 4B-parameter model to syntehize the Fathom-Search-4B search traces into rich citation-dense DeepResearch reports.
+  Two 4B-parameter models trained to browse, extract, verify and reason over live web content, and synthesize the findings into rich citation-dense reports!
 
 
 ---
