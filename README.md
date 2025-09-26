@@ -26,7 +26,11 @@
 
 ---
 
-<p align="center"> <img src="./assets/main-plots.png" style="width: 100%;" id="benchmark-img">       </p>
+<p align="center"> <img src="./assets/Final-webwalker.png" style="width: 100%;" id="benchmark-img">       </p>
+
+<p align="center"> <img src="./assets/Final-SimpleQA.png" style="width: 100%;" id="benchmark-img">       </p>
+
+<p align="center"> <img src="./assets/Final-DeepResearch.png" style="width: 100%;" id="benchmark-img">       </p>
 
 ---
 
