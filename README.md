@@ -35,8 +35,6 @@
 
 ---
 
-## ✨ News  
-[29/09/25]: Our paper on **Fathom-Search-4B** has been accepted to **SEA @ NeurIPS 2025** 🎉 [OpenReview link](https://openreview.net/forum?id=dE9tOPwWV7)
 
 ## ✨ Introduction
 
