@@ -342,13 +342,6 @@ def main():
     parser.add_argument("--summary-max-tokens", type=int, default=10000)
 
     args = parser.parse_args()
-    # python inference2.py \
-    # --question "Fractal Analytics that recently registered for IPO analyze if  I should subscribe to it? based on the fact that its a service company and AI is threatning to wipe out the industry of IT services?" \
-    # --executors http://0.0.0.0:1210 \
-    # --model-url http://0.0.0.0:1253 \
-    # --tokenizer /data/home/fractal/shreyas/models/Qwen3-4B \
-    # --summary-llm "gpt-4.1-mini" \
-    # --deepresearch 
 
 
     question = (args.question or "").strip()
