@@ -29,9 +29,9 @@
 <!-- <p align="center"> <img src="./assets/Final-WebWalker.png" style="width: 100%;" id="benchmark-img">       </p>
 
 <p align="center"> <img src="./assets/Final-SimpleQA.png" style="width: 100%;" id="benchmark-img">       </p> -->
+<p align="center"> <img src="https://raw.githubusercontent.com/FractalAIResearchLabs/Fathom-DeepResearch/refs/heads/main/assets/Final-DeepResearch.png" style="width: 50%;" id="deeepbenchmark-img">       </p>
 <p align="center"> <img src="https://raw.githubusercontent.com/FractalAIResearchLabs/Fathom-DeepResearch/refs/heads/main/assets/deep-search.png" style="width: 100%;" id="benchmark-img">       </p>
 
-<p align="center"> <img src="https://raw.githubusercontent.com/FractalAIResearchLabs/Fathom-DeepResearch/refs/heads/main/assets/Final-DeepResearch.png" style="width: 100%;" id="benchmark-img">       </p>
 
 ---
 
