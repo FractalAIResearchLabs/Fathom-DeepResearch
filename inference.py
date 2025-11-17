@@ -385,7 +385,7 @@ def main():
     prompt = build_summary_prompt(question, reformat_trace(transcript) or "", tool_calls)
     if args.deepresearch:
         print("Generating Report ........")
-        system_prompt = DEEPRESEARCH_REPORT_SYS_PROMPT 
+        system_prompt = DEEPRESEARCH_SYS_PROMPT
         try:
             resp = _route_and_summarize(
                 summary_llm=args.summary_llm,
